@@ -1,6 +1,6 @@
 #pragma once
-#include "Image.h"
-#include "FECore/vec3d.h"
+#include <FECore/Image.h>
+#include <FECore/vec3d.h>
 
 class ImageMap
 {

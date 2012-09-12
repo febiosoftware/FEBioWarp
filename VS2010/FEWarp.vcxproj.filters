@@ -24,9 +24,6 @@
     <ClCompile Include="..\fewarp\FEWarpPlot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\fewarp\Image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\fewarp\ImageMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,9 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\fewarp\FEWarpPlot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fewarp\Image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\fewarp\ImageMap.h">

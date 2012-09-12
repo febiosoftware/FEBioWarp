@@ -1,29 +1,13 @@
 #include "StdAfx.h"
 #include "FEWarpConstraint.h"
-#include "Image.h"
-#include "ImageMap.h"
 #include <FECore/FEElasticMaterial.h>
 #include <FECore/FEModel.h>
 #include <iostream>
 using namespace std;
 
-BEGIN_PARAMETER_LIST(FEWarpConstraint, FENLConstraint);
-	ADD_PARAMETER(m_wrp.m_sztmp, FE_PARAM_STRING, "template");
-	ADD_PARAMETER(m_wrp.m_sztrg, FE_PARAM_STRING, "target"  );
-	ADD_PARAMETER(m_wrp.m_k    , FE_PARAM_DOUBLE, "penalty" );
-	ADD_PARAMETER(m_blaugon    , FE_PARAM_BOOL  , "laugon"  );
-	ADD_PARAMETER(m_altol      , FE_PARAM_DOUBLE, "altol"   );
-END_PARAMETER_LIST();
-
 //-----------------------------------------------------------------------------
-Image tmp;
-Image trg;
-
 Image ds[3];	// first derivate of trg
 Image dds[6];	// second derivate of trg (assumed symmetric: xx, yy, zz, xy, yz, xz)
-
-ImageMap tmap(tmp);
-ImageMap smap(trg);
 
 ImageMap ds1map(ds[0]);
 ImageMap ds2map(ds[1]);
@@ -37,122 +21,23 @@ ImageMap dds5map(dds[4]);
 ImageMap dds6map(dds[5]);
 
 //-----------------------------------------------------------------------------
-FEWarpForce::FEWarpForce(FEModel* pfem) : FEBodyForce(pfem)
-{
-	m_k = 0;
-}
-
-//-----------------------------------------------------------------------------
-bool FEWarpForce::Init()
-{
-	// allocate storage for image data
-	tmp.Create(64, 64, 1);
-	trg.Create(64, 64, 1);
-	ds[0].Create(64, 64, 1);
-	ds[1].Create(64, 64, 1);
-	ds[2].Create(64, 64, 1);
-
-	dds[0].Create(64, 64, 1);
-	dds[1].Create(64, 64, 1);
-	dds[2].Create(64, 64, 1);
-	dds[3].Create(64, 64, 1);
-	dds[4].Create(64, 64, 1);
-	dds[5].Create(64, 64, 1);
-
-	tmap.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-	smap.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-	ds1map.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-	ds2map.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-	ds3map.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-
-	dds1map.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-	dds2map.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-	dds3map.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-	dds4map.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-	dds5map.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-	dds6map.SetRange(vec3d(0,0,0), vec3d(64, 64, 0));
-
-	// try to load the image data
-	if (tmp.Load(m_sztmp) == false) { cerr << "Failed reading template data " << m_sztmp << endl; return false; }
-	else cout << "Template loaded successfully\n";
-
-	if (trg.Load(m_sztrg) == false) { cerr << "Failed reading target data " << m_sztrg << endl; return false; }
-	else cout << "Target loaded successfully\n";
-
-	image_derive_x(trg, ds[0]);
-	image_derive_y(trg, ds[1]);
-	image_derive_z(trg, ds[2]);
-
-	image_derive_x(ds[0], dds[0]);
-	image_derive_y(ds[1], dds[1]);
-	image_derive_z(ds[2], dds[2]);
-	image_derive_y(ds[0], dds[3]);
-	image_derive_z(ds[1], dds[4]);
-	image_derive_z(ds[0], dds[5]);
-
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-vec3d FEWarpForce::force(FEMaterialPoint& mp)
-{
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-
-	double T = tmap.value(pt.r0);
-
-	ImageMap::POINT ps = smap.map(pt.rt);
-
-	double S = smap.value(ps);
-
-	double dx = smap.dx();
-	double dy = smap.dy();
-	double dz = smap.dz();
-
-	double dSx = ds1map.value(ps)/dx;
-	double dSy = ds2map.value(ps)/dy;
-	double dSz = ds3map.value(ps)/dz;
-
-	vec3d Fw = (vec3d(dSx, dSy, dSz))*((S - T)*m_k);
-
-	return Fw;
-}
-
-//-----------------------------------------------------------------------------
-mat3ds FEWarpForce::stiffness(FEMaterialPoint& mp)
-{
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-
-	double T = tmap.value(pt.r0);
-
-	ImageMap::POINT ps = smap.map(pt.rt);
-
-	double S = smap.value(ps);
-
-	double dx = smap.dx();
-	double dy = smap.dy();
-	double dz = smap.dz();
-
-	double dSx = ds1map.value(ps)/dx;
-	double dSy = ds2map.value(ps)/dy;
-	double dSz = ds3map.value(ps)/dz;
-
-	vec3d dS = vec3d(dSx, dSy, dSz);
-
-	mat3ds H;
-	H.xx() = dds1map.value(ps)/(dx*dx);
-	H.yy() = dds2map.value(ps)/(dy*dy);
-	H.zz() = dds3map.value(ps)/(dz*dz);
-	H.xy() = dds4map.value(ps)/(dx*dy);
-	H.yz() = dds5map.value(ps)/(dy*dz);
-	H.xz() = dds6map.value(ps)/(dx*dz);
-
-	return H*((T - S)*m_k) - dyad(dS)*m_k;
-}
+BEGIN_PARAMETER_LIST(FEWarpConstraint, FENLConstraint);
+	ADD_PARAMETER(m_tmp    , FE_PARAM_IMAGE_3D, "template");
+	ADD_PARAMETER(m_trg    , FE_PARAM_IMAGE_3D, "target"  );
+	ADD_PARAMETER(m_k      , FE_PARAM_DOUBLE  , "penalty" );
+	ADD_PARAMETER(m_blaugon, FE_PARAM_BOOL    , "laugon"  );
+	ADD_PARAMETER(m_altol  , FE_PARAM_DOUBLE  , "altol"   );
+	ADD_PARAMETERV(m_r0    , FE_PARAM_DOUBLEV, 3, "range_min");
+	ADD_PARAMETERV(m_r1    , FE_PARAM_DOUBLEV, 3, "range_max");
+END_PARAMETER_LIST();
 
 //=============================================================================
 
-FEWarpConstraint::FEWarpConstraint(FEModel* pfem) : FENLConstraint(pfem), m_wrp(pfem)
+FEWarpConstraint::FEWarpConstraint(FEModel* pfem) : FENLConstraint(pfem), m_tmap(m_tmp), m_smap(m_trg)
 {
+	m_blaugon = false;
+	m_altol = 0.01;
+	m_k = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -163,7 +48,48 @@ FEWarpConstraint::~FEWarpConstraint(void)
 //-----------------------------------------------------------------------------
 void FEWarpConstraint::Init()
 {
-	m_wrp.Init();
+	int nx = m_tmp.width ();
+	int ny = m_tmp.height();
+	int nz = m_tmp.depth ();
+
+	// allocate storage for image data
+	ds[0].Create(nx, ny, nz);
+	ds[1].Create(nx, ny, nz);
+	ds[2].Create(nx, ny, nz);
+
+	dds[0].Create(nx, ny, nz);
+	dds[1].Create(nx, ny, nz);
+	dds[2].Create(nx, ny, nz);
+	dds[3].Create(nx, ny, nz);
+	dds[4].Create(nx, ny, nz);
+	dds[5].Create(nx, ny, nz);
+
+	vec3d r0(m_r0[0], m_r0[1], m_r0[2]);
+	vec3d r1(m_r1[0], m_r1[1], m_r1[2]);
+
+	m_tmap.SetRange(r0, r1);
+	m_smap.SetRange(r0, r1);
+	ds1map.SetRange(r0, r1);
+	ds2map.SetRange(r0, r1);
+	ds3map.SetRange(r0, r1);
+
+	dds1map.SetRange(r0, r1);
+	dds2map.SetRange(r0, r1);
+	dds3map.SetRange(r0, r1);
+	dds4map.SetRange(r0, r1);
+	dds5map.SetRange(r0, r1);
+	dds6map.SetRange(r0, r1);
+
+	image_derive_x(m_trg, ds[0]);
+	image_derive_y(m_trg, ds[1]);
+	image_derive_z(m_trg, ds[2]);
+
+	image_derive_x(ds[0], dds[0]);
+	image_derive_y(ds[1], dds[1]);
+	image_derive_z(ds[2], dds[2]);
+	image_derive_y(ds[0], dds[3]);
+	image_derive_z(ds[1], dds[4]);
+	image_derive_z(ds[0], dds[5]);
 }
 
 //-----------------------------------------------------------------------------
@@ -241,7 +167,7 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 		detJ = dom.detJ0(el, n)*gw[n];
 
 		// get the force
-		f = m_wrp.force(mp);
+		f = wrpForce(mp);
 
 		H = el.H(n);
 
@@ -252,6 +178,30 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 			fe[3*i+2] -= H[i]*dens*f.z*detJ;
 		}						
 	}
+}
+
+//-----------------------------------------------------------------------------
+vec3d FEWarpConstraint::wrpForce(FEMaterialPoint& mp)
+{
+	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
+
+	double T = m_tmap.value(pt.r0);
+
+	ImageMap::POINT ps = m_smap.map(pt.rt);
+
+	double S = m_smap.value(ps);
+
+	double dx = m_smap.dx();
+	double dy = m_smap.dy();
+	double dz = m_smap.dz();
+
+	double dSx = ds1map.value(ps)/dx;
+	double dSy = ds2map.value(ps)/dy;
+	double dSz = ds3map.value(ps)/dz;
+
+	vec3d Fw = (vec3d(dSx, dSy, dSz))*((S - T)*m_k);
+
+	return Fw;
 }
 
 //-----------------------------------------------------------------------------
@@ -317,7 +267,7 @@ void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& 
 		detJ = dom.detJ0(el, n)*gw[n];
 
 		// get the stiffness
-		K = m_wrp.stiffness(mp);
+		K = wrpStiffness(mp);
 
 		H = el.H(n);
 
@@ -337,6 +287,38 @@ void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& 
 				ke[ndof*i+2][ndof*j+2] -= H[i]*H[j]*dens*K(2,2)*detJ;
 			}
 	}	
+}
+
+//-----------------------------------------------------------------------------
+mat3ds FEWarpConstraint::wrpStiffness(FEMaterialPoint& mp)
+{
+	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
+
+	double T = m_tmap.value(pt.r0);
+
+	ImageMap::POINT ps = m_smap.map(pt.rt);
+
+	double S = m_smap.value(ps);
+
+	double dx = m_smap.dx();
+	double dy = m_smap.dy();
+	double dz = m_smap.dz();
+
+	double dSx = ds1map.value(ps)/dx;
+	double dSy = ds2map.value(ps)/dy;
+	double dSz = ds3map.value(ps)/dz;
+
+	vec3d dS = vec3d(dSx, dSy, dSz);
+
+	mat3ds H;
+	H.xx() = dds1map.value(ps)/(dx*dx);
+	H.yy() = dds2map.value(ps)/(dy*dy);
+	H.zz() = dds3map.value(ps)/(dz*dz);
+	H.xy() = dds4map.value(ps)/(dx*dy);
+	H.yz() = dds5map.value(ps)/(dy*dz);
+	H.xz() = dds6map.value(ps)/(dx*dz);
+
+	return H*((T - S)*m_k) - dyad(dS)*m_k;
 }
 
 //-----------------------------------------------------------------------------
