@@ -4,21 +4,21 @@
 #include "stdafx.h"
 #include "FECore/febio.h"
 #include "FECore/FEBioFactory.h"
-#include "FEWarpForce.h"
+#include "FEWarpConstraint.h"
 #include "FEWarpPlot.h"
 
 FEBioKernel* pFEBio;
 
 //-----------------------------------------------------------------------------
-class FEWarpForceFactory : public FEBioFactory_T<FEBodyForce>
+class FEWarpConstraintFactory : public FEBioFactory_T<FENLConstraint>
 {
 public:
-	FEWarpForceFactory() : FEBioFactory_T<FEBodyForce>("warp"){}
-	bool IsType(FEBodyForce* pf) { return (dynamic_cast<FEWarpForceFactory*>(pf) != 0); }
-	FEBodyForce* Create(FEModel* pfem) { return new FEWarpForce(pfem); }
+	FEWarpConstraintFactory() : FEBioFactory_T<FENLConstraint>("warp"){}
+	bool IsType(FENLConstraint* pf) { return (dynamic_cast<FEWarpConstraint*>(pf) != 0); }
+	FENLConstraint* Create(FEModel* pfem) { return new FEWarpConstraint(pfem); }
 };
 
-FEWarpForceFactory warp_force_factory;
+FEWarpConstraintFactory warp_constraint_factory;
 
 //-----------------------------------------------------------------------------
 class FEPlotTemplateFactory : public FEBioFactory_T<FEPlotData>
@@ -68,7 +68,7 @@ FEPlotForceFactory plot_force_factory;
 //-----------------------------------------------------------------------------
 extern "C" __declspec(dllexport) void RegisterPlugin(FEBioKernel& febio)
 {
-	febio.RegisterClass(&warp_force_factory);
+	febio.RegisterClass(&warp_constraint_factory);
 	febio.RegisterClass(&plot_template_factory);
 	febio.RegisterClass(&plot_target_factory);
 	febio.RegisterClass(&plot_energy_factory);
