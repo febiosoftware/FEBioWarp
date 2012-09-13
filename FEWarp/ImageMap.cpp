@@ -20,9 +20,9 @@ void ImageMap::SetRange(vec3d r0, vec3d r1)
 
 ImageMap::POINT ImageMap::map(vec3d p)
 {
-	double x = (p.x - m_r0.x)/(m_r1.x);
-	double y = (p.y - m_r0.y)/(m_r1.y);
-	double z = (p.z - m_r0.z)/(m_r1.z);
+	double x = (p.x - m_r0.x)/(m_r1.x - m_r0.x);
+	double y = (p.y - m_r0.y)/(m_r1.y - m_r0.y);
+	double z = (p.z - m_r0.z)/(m_r1.z - m_r0.z);
 
 	int nx = m_img.width ();
 	int ny = m_img.height();
