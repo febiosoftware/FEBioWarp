@@ -33,6 +33,9 @@
     <ClCompile Include="..\FEWarp\FEWarpConstraint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\FEWarp\FEWarpSurfaceConstraint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\fewarp\FEWarpPlot.h">
@@ -48,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\FEWarp\FEWarpConstraint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\FEWarp\FEWarpSurfaceConstraint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

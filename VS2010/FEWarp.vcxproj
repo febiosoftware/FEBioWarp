@@ -78,12 +78,14 @@
     <ClCompile Include="..\fewarp\FEWarp.cpp" />
     <ClCompile Include="..\FEWarp\FEWarpConstraint.cpp" />
     <ClCompile Include="..\fewarp\FEWarpPlot.cpp" />
+    <ClCompile Include="..\FEWarp\FEWarpSurfaceConstraint.cpp" />
     <ClCompile Include="..\fewarp\ImageMap.cpp" />
     <ClCompile Include="..\fewarp\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\FEWarp\FEWarpConstraint.h" />
     <ClInclude Include="..\fewarp\FEWarpPlot.h" />
+    <ClInclude Include="..\FEWarp\FEWarpSurfaceConstraint.h" />
     <ClInclude Include="..\fewarp\ImageMap.h" />
     <ClInclude Include="..\fewarp\stdafx.h" />
     <ClInclude Include="..\fewarp\targetver.h" />
