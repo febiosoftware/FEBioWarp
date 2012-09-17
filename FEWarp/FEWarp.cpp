@@ -14,8 +14,8 @@ class FEWarpConstraintFactory : public FEBioFactory_T<FENLConstraint>
 {
 public:
 	FEWarpConstraintFactory() : FEBioFactory_T<FENLConstraint>("warp"){}
-	bool IsType(FENLConstraint* pf) { return (dynamic_cast<FEWarpConstraint*>(pf) != 0); }
-	FENLConstraint* Create(FEModel* pfem) { return new FEWarpConstraint(pfem); }
+	bool IsType(FENLConstraint* pf) { return (dynamic_cast<FEWarpImageConstraint*>(pf) != 0); }
+	FENLConstraint* Create(FEModel* pfem) { return new FEWarpImageConstraint(pfem); }
 };
 
 FEWarpConstraintFactory warp_constraint_factory;

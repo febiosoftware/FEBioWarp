@@ -13,10 +13,10 @@ bool FEPlotTemplate::Save(FEMesh &m, std::vector<float> &a)
 {
 	// find the warping constraint
 	FEModel& fem = *m_pfem;
-	FEWarpConstraint* pc = 0;
+	FEWarpImageConstraint* pc = 0;
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
-		pc = dynamic_cast<FEWarpConstraint*>(fem.NonlinearConstraint(i));
+		pc = dynamic_cast<FEWarpImageConstraint*>(fem.NonlinearConstraint(i));
 		if (pc) break;
 	}
 	if (pc == 0) return false;
@@ -33,10 +33,10 @@ bool FEPlotTarget::Save(FEMesh &m, std::vector<float> &a)
 {
 	// find the warping constraint
 	FEModel& fem = *m_pfem;
-	FEWarpConstraint* pc = 0;
+	FEWarpImageConstraint* pc = 0;
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
-		pc = dynamic_cast<FEWarpConstraint*>(fem.NonlinearConstraint(i));
+		pc = dynamic_cast<FEWarpImageConstraint*>(fem.NonlinearConstraint(i));
 		if (pc) break;
 	}
 	if (pc == 0) return false;
@@ -54,10 +54,10 @@ bool FEPlotEnergy::Save(FEMesh &m, std::vector<float> &a)
 {
 	// find the warping constraint
 	FEModel& fem = *m_pfem;
-	FEWarpConstraint* pc = 0;
+	FEWarpImageConstraint* pc = 0;
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
-		pc = dynamic_cast<FEWarpConstraint*>(fem.NonlinearConstraint(i));
+		pc = dynamic_cast<FEWarpImageConstraint*>(fem.NonlinearConstraint(i));
 		if (pc) break;
 	}
 	if (pc == 0) return false;
@@ -80,10 +80,10 @@ bool FEPlotForce::Save(FEMesh &m, std::vector<float> &a)
 {
 	// find the warping constraint
 	FEModel& fem = *m_pfem;
-	FEWarpConstraint* pc = 0;
+	FEWarpImageConstraint* pc = 0;
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
-		pc = dynamic_cast<FEWarpConstraint*>(fem.NonlinearConstraint(i));
+		pc = dynamic_cast<FEWarpImageConstraint*>(fem.NonlinearConstraint(i));
 		if (pc) break;
 	}
 	if (pc == 0) return false;

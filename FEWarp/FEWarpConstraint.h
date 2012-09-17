@@ -16,21 +16,43 @@ public:
 	~FEWarpConstraint(void);
 
 public: // inherited members
-	void Init();
 	void Residual(FENLSolver* psolver, vector<double>& R);
 	void StiffnessMatrix(FENLSolver* psolver);
 	bool Augment(int naug);
 	void Serialize(DumpFile& ar);
 	void Update();
 
-public:
-	ImageMap& GetTemplateMap() { return m_tmap; }
-	ImageMap& GetTargetMap  () { return m_smap; }
-
 protected:
 	void ElementWarpForce    (FESolidDomain& dom, FESolidElement& el, vector<double>& fe, double dens);
 	void ElementWarpStiffness(FESolidDomain& dom, FESolidElement& el, matrix& ke, double dens);
 
+	//! Calculate the force at a material point
+	virtual vec3d wrpForce(FEMaterialPoint& pt) = 0;
+
+	//! calculate the stiffness at a material point
+	virtual mat3ds wrpStiffness(FEMaterialPoint& pt) = 0;
+
+protected:
+	bool		m_blaugon;	//!< augmented lagrangian flag
+	double		m_altol;	//!< augmentation tolerance
+	double		m_k;		//!< penalty parameter
+};
+
+//-----------------------------------------------------------------------------
+class FEWarpImageConstraint : public FEWarpConstraint
+{
+public:
+	FEWarpImageConstraint(FEModel* pfem);
+	~FEWarpImageConstraint() {}
+
+	// initialization
+	void Init();
+
+public:
+	ImageMap& GetTemplateMap() { return m_tmap; }
+	ImageMap& GetTargetMap  () { return m_smap; }
+
+public:
 	//! Calculate the force at a material point
 	vec3d wrpForce(FEMaterialPoint& pt);
 
@@ -38,10 +60,6 @@ protected:
 	mat3ds wrpStiffness(FEMaterialPoint& pt);
 
 protected:
-	bool		m_blaugon;	//!< augmented lagrangian flag
-	double		m_altol;	//!< augmentation tolerance
-	double		m_k;		//!< penalty parameter
-
 	double	m_r0[3];	//!< minimum range
 	double	m_r1[3];	//!< maximum range
 
