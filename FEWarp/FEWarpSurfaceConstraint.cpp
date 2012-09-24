@@ -23,9 +23,7 @@ double FEWarpSurface::Project(vec3d r)
 }
 
 //=============================================================================
-BEGIN_PARAMETER_LIST(FEWarpImageConstraint, FEWarpConstraint);
-	ADD_PARAMETER(m_tmp    , FE_PARAM_STRING  , "template");
-	ADD_PARAMETER(m_trg    , FE_PARAM_STRING  , "target"  );
+BEGIN_PARAMETER_LIST(FEWarpSurfaceConstraint, FEWarpConstraint);
 	ADD_PARAMETER(m_k      , FE_PARAM_DOUBLE  , "penalty" );
 	ADD_PARAMETER(m_blaugon, FE_PARAM_BOOL    , "laugon"  );
 	ADD_PARAMETER(m_altol  , FE_PARAM_DOUBLE  , "altol"   );

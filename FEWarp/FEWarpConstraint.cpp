@@ -22,7 +22,7 @@ FEWarpConstraint::~FEWarpConstraint(void)
 
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::Residual(FENLSolver* psolver, vector<double>& R)
+void FEWarpConstraint::Residual(FEGlobalVector& R)
 {
 	FEModel& fem = *m_pfem;
 	FEMesh& mesh = fem.GetMesh();
@@ -56,7 +56,7 @@ void FEWarpConstraint::Residual(FENLSolver* psolver, vector<double>& R)
 			dom.UnpackLM(el, lm);
 
 			// assemble element 'fe'-vector into global R vector
-			psolver->AssembleResidual(el.m_node, lm, fe, R);
+			R.Assemble(el.m_node, lm, fe);
 		}
 	}
 }

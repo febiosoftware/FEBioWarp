@@ -16,7 +16,7 @@ public:
 	~FEWarpConstraint(void);
 
 public: // inherited members
-	void Residual(FENLSolver* psolver, vector<double>& R);
+	void Residual(FEGlobalVector& R);
 	void StiffnessMatrix(FENLSolver* psolver);
 	bool Augment(int naug);
 	void Serialize(DumpFile& ar);
