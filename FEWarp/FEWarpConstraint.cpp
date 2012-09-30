@@ -10,7 +10,7 @@ using namespace std;
 FEWarpConstraint::FEWarpConstraint(FEModel* pfem) : FENLConstraint(pfem)
 {
 	m_blaugon = false;
-	m_altol = 0.01;
+	m_altol = 0.1;
 	m_k = 0;
 }
 
@@ -20,6 +20,28 @@ FEWarpConstraint::~FEWarpConstraint(void)
 
 }
 
+//-----------------------------------------------------------------------------
+void FEWarpConstraint::Init()
+{
+	FEModel& fem = *m_pfem;
+	FEMesh& mesh = fem.GetMesh();
+
+	// figure out how many integration points we need
+	int nint = 0;
+	for (int i=0; i<mesh.Domains(); ++i)
+	{
+		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(i));
+		int NE = dom.Elements();
+		for (int j=0; j<NE; ++j)
+		{
+			FESolidElement& el = dom.Element(j);
+			nint += el.GaussPoints();
+		}
+	}
+
+	// allocate storage for Lagrange multipliers
+	m_Lm.assign(nint, vec3d(0,0,0));
+}
 
 //-----------------------------------------------------------------------------
 void FEWarpConstraint::Residual(FEGlobalVector& R)
@@ -29,6 +51,9 @@ void FEWarpConstraint::Residual(FEGlobalVector& R)
 
 	vector<double> fe;
 	vector<int> lm;
+
+	// reset multiplier counter
+	m_nint = 0;
 
 	// loop over all domains
 	int NDOM = mesh.Domains();
@@ -96,7 +121,7 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 		detJ = dom.detJ0(el, n)*gw[n];
 
 		// get the force
-		f = wrpForce(mp);
+		f = m_Lm[m_nint++] + wrpForce(mp);
 
 		H = el.H(n);
 
@@ -197,7 +222,65 @@ void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& 
 //-----------------------------------------------------------------------------
 bool FEWarpConstraint::Augment(int naug)
 {
-	return true;
+	if (m_blaugon == false) return true;
+
+	FEModel& fem = *m_pfem;
+	FEMesh& mesh = fem.GetMesh();
+
+	vector<vec3d> L0(m_Lm);
+	vector<vec3d> L1(m_Lm);
+
+	m_nint = 0;
+	for (int i=0; i<mesh.Domains(); ++i)
+	{
+		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(i));
+		int NE = dom.Elements();
+		for (int j=0; j<NE; ++j)
+		{
+			FESolidElement& el = dom.Element(j);
+			int nint = el.GaussPoints();
+			int neln = el.Nodes();
+
+			// nodal coordinates
+			vec3d r0[FEElement::MAX_NODES], rt[FEElement::MAX_NODES];
+			for (int i=0; i<neln; ++i)
+			{
+				r0[i] = mesh.Node(el.m_node[i]).m_r0;
+				rt[i] = mesh.Node(el.m_node[i]).m_rt;
+			}
+
+			for (int n=0; n<nint; ++n, ++m_nint)
+			{
+				FEMaterialPoint& mp = *el.m_State[n];
+				FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
+				pt.r0 = el.Evaluate(r0, n);
+				pt.rt = el.Evaluate(rt, n);
+
+				L1[m_nint] = L0[m_nint] + wrpForce(pt);
+			}
+		}
+	}
+
+	// calculate the norm
+	double normL0 = 0, normL1 = 0;
+	for (int i=0; i<m_nint; ++i) 
+	{
+		normL0 += L0[i]*L0[i];
+		normL1 += L1[i]*L1[i];
+	}
+
+	double Lerr = fabs((normL1 - normL0)/normL1);
+
+	printf("warping norm: %lg\n", Lerr);
+
+	if (Lerr >= m_altol)
+	{
+		// update multipliers
+		m_Lm = L1;
+	}
+
+	// check convergence
+	return (Lerr < m_altol);
 }
 
 //-----------------------------------------------------------------------------
@@ -250,6 +333,8 @@ FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(p
 //-----------------------------------------------------------------------------
 void FEWarpImageConstraint::Init()
 {
+	FEWarpConstraint::Init();
+
 	int nx = m_tmp.width ();
 	int ny = m_tmp.height();
 	int nz = m_tmp.depth ();

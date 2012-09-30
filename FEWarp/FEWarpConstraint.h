@@ -16,6 +16,7 @@ public:
 	~FEWarpConstraint(void);
 
 public: // inherited members
+	void Init();
 	void Residual(FEGlobalVector& R);
 	void StiffnessMatrix(FENLSolver* psolver);
 	bool Augment(int naug);
@@ -36,6 +37,9 @@ protected:
 	bool		m_blaugon;	//!< augmented lagrangian flag
 	double		m_altol;	//!< augmentation tolerance
 	double		m_k;		//!< penalty parameter
+
+	vector<vec3d>	m_Lm;	//!< Lagrange multipliers
+	int				m_nint;	//!< running counter for multipliers
 };
 
 //-----------------------------------------------------------------------------
