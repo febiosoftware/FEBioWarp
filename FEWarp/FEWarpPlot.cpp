@@ -3,6 +3,7 @@
 #include "FEWarpPlot.h"
 #include "ImageMap.h"
 #include "FEWarpConstraint.h"
+#include "FEWarpImageConstraint.h"
 #include <FECore/FEModel.h>
 
 extern ImageMap ds1map;

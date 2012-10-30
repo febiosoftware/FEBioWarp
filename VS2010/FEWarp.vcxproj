@@ -77,6 +77,7 @@
     <ClCompile Include="..\fewarp\dllmain.cpp" />
     <ClCompile Include="..\fewarp\FEWarp.cpp" />
     <ClCompile Include="..\FEWarp\FEWarpConstraint.cpp" />
+    <ClCompile Include="..\FEWarp\FEWarpImageConstraint.cpp" />
     <ClCompile Include="..\fewarp\FEWarpPlot.cpp" />
     <ClCompile Include="..\FEWarp\FEWarpSurfaceConstraint.cpp" />
     <ClCompile Include="..\fewarp\ImageMap.cpp" />
@@ -84,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\FEWarp\FEWarpConstraint.h" />
+    <ClInclude Include="..\FEWarp\FEWarpImageConstraint.h" />
     <ClInclude Include="..\fewarp\FEWarpPlot.h" />
     <ClInclude Include="..\FEWarp\FEWarpSurfaceConstraint.h" />
     <ClInclude Include="..\fewarp\ImageMap.h" />

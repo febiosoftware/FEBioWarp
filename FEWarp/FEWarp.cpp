@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "FECore/febio.h"
 #include "FECore/FEBioFactory.h"
-#include "FEWarpConstraint.h"
+#include "FEWarpImageConstraint.h"
 #include "FEWarpPlot.h"
 
 FEBioKernel* pFEBio;
