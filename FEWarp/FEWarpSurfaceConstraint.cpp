@@ -17,9 +17,12 @@ void FEWarpSurface::Init()
 }
 
 //-----------------------------------------------------------------------------
+// Find the closest-point projection of this point
 vec3d FEWarpSurface::Project(vec3d r)
 {
 	vec3d q;
+	vec2d s;
+	m_cpp->Project(r, q, s);
 	return q;
 }
 

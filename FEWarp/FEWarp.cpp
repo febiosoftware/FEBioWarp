@@ -5,20 +5,33 @@
 #include "FECore/febio.h"
 #include "FECore/FEBioFactory.h"
 #include "FEWarpImageConstraint.h"
+#include "FEWarpSurfaceConstraint.h"
 #include "FEWarpPlot.h"
 
 FEBioKernel* pFEBio;
 
 //-----------------------------------------------------------------------------
-class FEWarpConstraintFactory : public FEBioFactory_T<FENLConstraint>
+class FEWarpImageConstraintFactory : public FEBioFactory_T<FENLConstraint>
 {
 public:
-	FEWarpConstraintFactory() : FEBioFactory_T<FENLConstraint>("warp"){}
+	FEWarpImageConstraintFactory() : FEBioFactory_T<FENLConstraint>("warp-image"){}
 	bool IsType(FENLConstraint* pf) { return (dynamic_cast<FEWarpImageConstraint*>(pf) != 0); }
 	FENLConstraint* Create(FEModel* pfem) { return new FEWarpImageConstraint(pfem); }
 };
 
-FEWarpConstraintFactory warp_constraint_factory;
+FEWarpImageConstraintFactory warp_image_factory;
+
+//-----------------------------------------------------------------------------
+class FEWarpMeshConstraintFactory : public FEBioFactory_T<FENLConstraint>
+{
+public:
+	FEWarpMeshConstraintFactory() : FEBioFactory_T<FENLConstraint>("warp-mesh"){}
+	bool IsType(FENLConstraint* pf) { return (dynamic_cast<FEWarpSurfaceConstraint*>(pf) != 0); }
+	FENLConstraint* Create(FEModel* pfem) { return new FEWarpSurfaceConstraint(pfem); }
+};
+
+FEWarpMeshConstraintFactory warp_mesh_factory;
+
 
 //-----------------------------------------------------------------------------
 class FEPlotTemplateFactory : public FEBioFactory_T<FEPlotData>
@@ -41,7 +54,6 @@ public:
 };
 
 FEPlotTargetFactory plot_target_factory;
-
 
 //-----------------------------------------------------------------------------
 class FEPlotEnergyFactory : public FEBioFactory_T<FEPlotData>
@@ -68,10 +80,11 @@ FEPlotForceFactory plot_force_factory;
 //-----------------------------------------------------------------------------
 extern "C" __declspec(dllexport) void RegisterPlugin(FEBioKernel& febio)
 {
-	febio.RegisterClass(&warp_constraint_factory);
+	febio.RegisterClass(&warp_image_factory   );
+	febio.RegisterClass(&warp_mesh_factory    );
 	febio.RegisterClass(&plot_template_factory);
-	febio.RegisterClass(&plot_target_factory);
-	febio.RegisterClass(&plot_energy_factory);
-	febio.RegisterClass(&plot_force_factory);
+	febio.RegisterClass(&plot_target_factory  );
+	febio.RegisterClass(&plot_energy_factory  );
+	febio.RegisterClass(&plot_force_factory   );
 	pFEBio = &febio;
 }
