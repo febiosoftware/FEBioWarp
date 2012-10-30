@@ -17,9 +17,10 @@ void FEWarpSurface::Init()
 }
 
 //-----------------------------------------------------------------------------
-double FEWarpSurface::Project(vec3d r)
+vec3d FEWarpSurface::Project(vec3d r)
 {
-	return 0;
+	vec3d q;
+	return q;
 }
 
 //=============================================================================
@@ -39,6 +40,7 @@ FEWarpSurfaceConstraint::FEWarpSurfaceConstraint(FEModel* pfem) : FEWarpConstrai
 //-----------------------------------------------------------------------------
 void FEWarpSurfaceConstraint::Init()
 {
+	// read the two models
 }
 
 //-----------------------------------------------------------------------------
@@ -52,12 +54,18 @@ vec3d FEWarpSurfaceConstraint::wrpForce(FEMaterialPoint& mp)
 
 	vec3d qt, qs;
 
-	double T = m_ptmp->Project(r0);
-	double S = m_ptrg->Project(rt);
+	vec3d qT = m_ptmp->Project(r0);
+	vec3d qS = m_ptrg->Project(rt);
+
+	double lT = (r0 - qT).norm();
+	double lS = (rt - qS).norm();
+
+	double T = 1.0/(1.0 + lT);
+	double S = 1.0/(1.0 + lS);
 
 	// get the target gradient
 	// NOTE: this gradient must be perpendicular to the target surface at the closest point
-	vec3d nS;
+	vec3d nS = rt - qS; nS.unit();
 
 	return nS*(T - S);
 }

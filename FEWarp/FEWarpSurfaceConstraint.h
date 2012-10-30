@@ -3,6 +3,7 @@
 #include <FECore/FEClosestPointProjection.h>
 
 //-----------------------------------------------------------------------------
+// This class implements a warping constraint on a surface definition
 class FEWarpSurface
 {
 public:
@@ -13,7 +14,7 @@ public:
 	void Init();
 
 	// project a point onto the surface
-	double Project(vec3d r);
+	vec3d Project(vec3d r);
 
 protected:
 	FEMesh	m_msh;	// the actual surface mesh
