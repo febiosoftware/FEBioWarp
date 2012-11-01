@@ -38,6 +38,8 @@ protected:
 	double		m_altol;	//!< augmentation tolerance
 	double		m_k;		//!< penalty parameter
 
+	vector<int>	m_dom;		//!< list of domains to warp
+
 	vector<vec3d>	m_Lm;	//!< Lagrange multipliers
 	int				m_nint;	//!< running counter for multipliers
 };

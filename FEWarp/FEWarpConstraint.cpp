@@ -26,11 +26,18 @@ void FEWarpConstraint::Init()
 	FEModel& fem = *m_pfem;
 	FEMesh& mesh = fem.GetMesh();
 
+	// if no domains are selected, add all domains
+	if (m_dom.empty()) 
+	{
+		for (int i=0; i<mesh.Domains(); ++i) m_dom.push_back(i);
+	}
+
 	// figure out how many integration points we need
 	int nint = 0;
-	for (int i=0; i<mesh.Domains(); ++i)
+	int ND = m_dom.size();
+	for (int i=0; i<ND; ++i)
 	{
-		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(i));
+		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(m_dom[i]));
 		int NE = dom.Elements();
 		for (int j=0; j<NE; ++j)
 		{
@@ -56,10 +63,10 @@ void FEWarpConstraint::Residual(FEGlobalVector& R)
 	m_nint = 0;
 
 	// loop over all domains
-	int NDOM = mesh.Domains();
+	int NDOM = m_dom.size();
 	for (int n=0; n<NDOM; ++n)
 	{
-		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(n));
+		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(m_dom[n]));
 
 		// don't forget to multiply with the density
 		FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom.GetMaterial());
@@ -145,10 +152,10 @@ void FEWarpConstraint::StiffnessMatrix(FENLSolver* psolver)
 	vector<int> lm;
 
 	// loop over all domains
-	int NDOM = mesh.Domains();
+	int NDOM = m_dom.size();
 	for (int n=0; n<NDOM; ++n)
 	{
-		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(n));
+		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(m_dom[n]));
 
 		// don't forget to multiply with the density
 		FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom.GetMaterial());
@@ -231,9 +238,10 @@ bool FEWarpConstraint::Augment(int naug)
 	vector<vec3d> L1(m_Lm);
 
 	m_nint = 0;
-	for (int i=0; i<mesh.Domains(); ++i)
+	int NDOM = m_dom.size();
+	for (int i=0; i<NDOM; ++i)
 	{
-		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(i));
+		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(m_dom[i]));
 		int NE = dom.Elements();
 		for (int j=0; j<NE; ++j)
 		{
