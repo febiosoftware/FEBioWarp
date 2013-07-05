@@ -16,7 +16,7 @@ vec3d FEWarpSurface::Project(vec3d x)
 {
 	vec3d q;
 	vec2d s;
-	ClosestReferencePointProjection(x, q, s, m_binit, 0.001);
+//	ClosestReferencePointProjection(x, q, s, m_binit, 0.001);
 	m_binit = false;
 	return q;
 }
