@@ -87,9 +87,9 @@ vec3d FEWarpImageConstraint::wrpForce(FEMaterialPoint& mp)
 {
 	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
 
-	double T = m_tmap.value(pt.r0);
+	double T = m_tmap.value(pt.m_r0);
 
-	ImageMap::POINT ps = m_smap.map(pt.rt);
+	ImageMap::POINT ps = m_smap.map(pt.m_rt);
 
 	double S = m_smap.value(ps);
 
@@ -111,9 +111,9 @@ mat3ds FEWarpImageConstraint::wrpStiffness(FEMaterialPoint& mp)
 {
 	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
 
-	double T = m_tmap.value(pt.r0);
+	double T = m_tmap.value(pt.m_r0);
 
-	ImageMap::POINT ps = m_smap.map(pt.rt);
+	ImageMap::POINT ps = m_smap.map(pt.m_rt);
 
 	double S = m_smap.value(ps);
 

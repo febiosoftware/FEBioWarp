@@ -122,8 +122,8 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 	{
 		FEMaterialPoint& mp = *el.m_State[n];
 		FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-		pt.r0 = el.Evaluate(r0, n);
-		pt.rt = el.Evaluate(rt, n);
+		pt.m_r0 = el.Evaluate(r0, n);
+		pt.m_rt = el.Evaluate(rt, n);
 
 		detJ = dom.detJ0(el, n)*gw[n];
 
@@ -142,7 +142,7 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::StiffnessMatrix(FENLSolver* psolver)
+void FEWarpConstraint::StiffnessMatrix(FESolver* psolver)
 {
 	FEModel& fem = *m_pfem;
 	FEMesh& mesh = fem.GetMesh();
@@ -261,8 +261,8 @@ bool FEWarpConstraint::Augment(int naug)
 			{
 				FEMaterialPoint& mp = *el.m_State[n];
 				FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-				pt.r0 = el.Evaluate(r0, n);
-				pt.rt = el.Evaluate(rt, n);
+				pt.m_r0 = el.Evaluate(r0, n);
+				pt.m_rt = el.Evaluate(rt, n);
 
 				L1[m_nint] = L0[m_nint] + wrpForce(pt);
 			}

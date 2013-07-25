@@ -18,7 +18,7 @@ public:
 public: // inherited members
 	void Init();
 	void Residual(FEGlobalVector& R);
-	void StiffnessMatrix(FENLSolver* psolver);
+	void StiffnessMatrix(FESolver* psolver);
 	bool Augment(int naug);
 	void Serialize(DumpFile& ar);
 	void Update();
