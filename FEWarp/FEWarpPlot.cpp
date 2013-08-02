@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "FECore/FESolidDomain.h"
 #include "FEWarpPlot.h"
 #include "ImageMap.h"

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FEWarpSurfaceConstraint.h"
-#include <FECore/FEElasticMaterial.h>
+#include <FEBioMech/FEElasticMaterial.h>
 #include <FECore/FEModel.h>
 
 //=============================================================================

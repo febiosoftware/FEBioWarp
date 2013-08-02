@@ -1,6 +1,6 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "FEWarpConstraint.h"
-#include <FECore/FEElasticMaterial.h>
+#include <FEBioMech/FEElasticMaterial.h>
 #include <FECore/FEModel.h>
 #include <iostream>
 using namespace std;

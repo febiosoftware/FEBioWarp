@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FEWarpImageConstraint.h"
-#include <FECore/FEElasticMaterial.h>
+#include <FEBioMech/FEElasticMaterial.h>
 
 Image ds[3];	// first derivate of trg
 Image dds[6];	// second derivate of trg (assumed symmetric: xx, yy, zz, xy, yz, xz)
