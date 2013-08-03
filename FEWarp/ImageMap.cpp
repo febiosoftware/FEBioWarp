@@ -71,7 +71,7 @@ ImageMap::POINT ImageMap::map(vec3d p)
 	return pt;
 }
 
-double ImageMap::value(POINT& p)
+double ImageMap::value(const POINT& p)
 {
 	int nx = m_img.width ();
 	int ny = m_img.height();

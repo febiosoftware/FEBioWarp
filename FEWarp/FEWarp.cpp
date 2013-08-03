@@ -8,6 +8,12 @@
 #include "FEWarpSurfaceConstraint.h"
 #include "FEWarpPlot.h"
 
+#ifdef WIN32
+#define DLL_EXPORT __declspec(dllexport)
+#else
+#define DLL_EXPORT
+#endif
+
 FEBioKernel* pFEBio;
 
 //-----------------------------------------------------------------------------
@@ -78,7 +84,7 @@ public:
 FEPlotForceFactory plot_force_factory;
 
 //-----------------------------------------------------------------------------
-extern "C" __declspec(dllexport) void RegisterPlugin(FEBioKernel& febio)
+extern "C" DLL_EXPORT void RegisterPlugin(FEBioKernel& febio)
 {
 	febio.RegisterClass(&warp_image_factory   );
 	febio.RegisterClass(&warp_mesh_factory    );

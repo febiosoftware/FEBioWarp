@@ -19,7 +19,7 @@ public:
 
 	POINT map(vec3d p);
 
-	double value(POINT& p);
+	double value(const POINT& p);
 	double value(vec3d r) { return value(map(r)); }
 
 	double dx() { return (m_r1.x - m_r0.x)/(double) (m_img.width () - 1); }
