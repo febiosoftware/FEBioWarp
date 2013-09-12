@@ -84,13 +84,21 @@ public:
 FEPlotForceFactory plot_force_factory;
 
 //-----------------------------------------------------------------------------
-extern "C" DLL_EXPORT void RegisterPlugin(FEBioKernel& febio)
+extern "C" DLL_EXPORT FEBioFactory* RegisterPlugin(FEBioKernel& febio)
 {
-	febio.RegisterClass(&warp_image_factory   );
-	febio.RegisterClass(&warp_mesh_factory    );
-	febio.RegisterClass(&plot_template_factory);
-	febio.RegisterClass(&plot_target_factory  );
-	febio.RegisterClass(&plot_energy_factory  );
-	febio.RegisterClass(&plot_force_factory   );
-	pFEBio = &febio;
+	static int n = -1;
+	n++;
+
+	switch (n)
+	{
+	case 0: return &warp_image_factory;
+	case 1: return &warp_mesh_factory;
+	case 2: return &plot_template_factory;
+	case 3: return &plot_target_factory;
+	case 4: return &plot_energy_factory;
+	case 5: return &plot_force_factory;
+	default:
+		pFEBio = &febio;
+		return 0;
+	}
 }
