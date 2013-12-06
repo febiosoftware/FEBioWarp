@@ -58,12 +58,14 @@ FESurface* FEWarpSurfaceConstraint::GetSurface(const char* sz)
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpSurfaceConstraint::Init()
+bool FEWarpSurfaceConstraint::Init()
 {
 	FEWarpConstraint::Init();
 
 	m_ptmp->Init();
 	m_ptrg->Init();
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------

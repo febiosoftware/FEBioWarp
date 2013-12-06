@@ -1,7 +1,6 @@
 #pragma once
 #include <FECore/FENLConstraint.h>
 #include <FECore/FEMaterialPoint.h>
-#include <FECore/FEBodyForce.h>
 #include <FECore/FESolidDomain.h>
 #include <FECore/Image.h>
 #include "ImageMap.h"
@@ -16,7 +15,7 @@ public:
 	~FEWarpConstraint(void);
 
 public: // inherited members
-	void Init();
+	bool Init();
 	void Residual(FEGlobalVector& R);
 	void StiffnessMatrix(FESolver* psolver);
 	bool Augment(int naug);

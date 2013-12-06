@@ -17,79 +17,87 @@
 FEBioKernel* pFEBio;
 
 //-----------------------------------------------------------------------------
-class FEWarpImageConstraintFactory : public FEBioFactory_T<FENLConstraint>
+class FEWarpImageConstraintFactory : public FEBioFactory
 {
 public:
-	FEWarpImageConstraintFactory() : FEBioFactory_T<FENLConstraint>("warp-image"){}
-	bool IsType(FENLConstraint* pf) { return (dynamic_cast<FEWarpImageConstraint*>(pf) != 0); }
-	FENLConstraint* Create(FEModel* pfem) { return new FEWarpImageConstraint(pfem); }
+	FEWarpImageConstraintFactory() : FEBioFactory(FENLCONSTRAINT_ID, "warp-image"){}
+	void* Create(FEModel* pfem) { return new FEWarpImageConstraint(pfem); }
 };
 
 FEWarpImageConstraintFactory warp_image_factory;
 
 //-----------------------------------------------------------------------------
-class FEWarpMeshConstraintFactory : public FEBioFactory_T<FENLConstraint>
+class FEWarpMeshConstraintFactory : public FEBioFactory
 {
 public:
-	FEWarpMeshConstraintFactory() : FEBioFactory_T<FENLConstraint>("warp-mesh"){}
-	bool IsType(FENLConstraint* pf) { return (dynamic_cast<FEWarpSurfaceConstraint*>(pf) != 0); }
-	FENLConstraint* Create(FEModel* pfem) { return new FEWarpSurfaceConstraint(pfem); }
+	FEWarpMeshConstraintFactory() : FEBioFactory(FENLCONSTRAINT_ID, "warp-mesh"){}
+	void* Create(FEModel* pfem) { return new FEWarpSurfaceConstraint(pfem); }
 };
 
 FEWarpMeshConstraintFactory warp_mesh_factory;
 
-
 //-----------------------------------------------------------------------------
-class FEPlotTemplateFactory : public FEBioFactory_T<FEPlotData>
+class FEPlotTemplateFactory : public FEBioFactory
 {
 public:
-	FEPlotTemplateFactory() : FEBioFactory_T<FEPlotData>("template"){}
-	bool IsType(FEPlotData* po) { return (dynamic_cast<FEPlotTemplate*>(po) != 0); }
-	FEPlotData* Create(FEModel* pfem) { return new FEPlotTemplate(pfem); }
+	FEPlotTemplateFactory() : FEBioFactory(FEPLOTDATA_ID, "template"){}
+	void* Create(FEModel* pfem) { return new FEPlotTemplate(pfem); }
 };
 
 FEPlotTemplateFactory plot_template_factory;
 
 //-----------------------------------------------------------------------------
-class FEPlotTargetFactory : public FEBioFactory_T<FEPlotData>
+class FEPlotTargetFactory : public FEBioFactory
 {
 public:
-	FEPlotTargetFactory() : FEBioFactory_T<FEPlotData>("target"){}
-	bool IsType(FEPlotData* po) { return (dynamic_cast<FEPlotTarget*>(po) != 0); }
-	FEPlotData* Create(FEModel* pfem) { return new FEPlotTarget(pfem); }
+	FEPlotTargetFactory() : FEBioFactory(FEPLOTDATA_ID, "target"){}
+	void* Create(FEModel* pfem) { return new FEPlotTarget(pfem); }
 };
 
 FEPlotTargetFactory plot_target_factory;
 
 //-----------------------------------------------------------------------------
-class FEPlotEnergyFactory : public FEBioFactory_T<FEPlotData>
+class FEPlotEnergyFactory : public FEBioFactory
 {
 public:
-	FEPlotEnergyFactory() : FEBioFactory_T<FEPlotData>("energy"){}
-	bool IsType(FEPlotData* po) { return (dynamic_cast<FEPlotEnergy*>(po) != 0); }
-	FEPlotData* Create(FEModel* pfem) { return new FEPlotEnergy(pfem); }
+	FEPlotEnergyFactory() : FEBioFactory(FEPLOTDATA_ID, "energy"){}
+	void* Create(FEModel* pfem) { return new FEPlotEnergy(pfem); }
 };
 
 FEPlotEnergyFactory plot_energy_factory;
 
 //-----------------------------------------------------------------------------
-class FEPlotForceFactory : public FEBioFactory_T<FEPlotData>
+class FEPlotForceFactory : public FEBioFactory
 {
 public:
-	FEPlotForceFactory() : FEBioFactory_T<FEPlotData>("warp force"){}
-	bool IsType(FEPlotData* po) { return (dynamic_cast<FEPlotForce*>(po) != 0); }
-	FEPlotData* Create(FEModel* pfem) { return new FEPlotForce(pfem); }
+	FEPlotForceFactory() : FEBioFactory(FEPLOTDATA_ID, "warp force"){}
+	void* Create(FEModel* pfem) { return new FEPlotForce(pfem); }
 };
 
 FEPlotForceFactory plot_force_factory;
 
 //-----------------------------------------------------------------------------
-extern "C" DLL_EXPORT FEBioFactory* RegisterPlugin(FEBioKernel& febio)
+extern "C" DLL_EXPORT void PluginInitialize(FEBioKernel& febio)
 {
-	static int n = -1;
-	n++;
 
-	switch (n)
+}
+
+//-----------------------------------------------------------------------------
+extern "C" DLL_EXPORT void PluginCleanup()
+{
+
+}
+
+//-----------------------------------------------------------------------------
+extern "C" DLL_EXPORT int PluginNumClasses()
+{
+	return 6;
+}
+
+//-----------------------------------------------------------------------------
+extern "C" DLL_EXPORT FEBioFactory* PluginGetFactory(int i)
+{
+	switch (i)
 	{
 	case 0: return &warp_image_factory;
 	case 1: return &warp_mesh_factory;
@@ -98,7 +106,6 @@ extern "C" DLL_EXPORT FEBioFactory* RegisterPlugin(FEBioKernel& febio)
 	case 4: return &plot_energy_factory;
 	case 5: return &plot_force_factory;
 	default:
-		pFEBio = &febio;
 		return 0;
 	}
 }

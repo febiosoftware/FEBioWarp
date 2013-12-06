@@ -21,9 +21,9 @@ FEWarpConstraint::~FEWarpConstraint(void)
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::Init()
+bool FEWarpConstraint::Init()
 {
-	FEModel& fem = *m_pfem;
+	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
 
 	// if no domains are selected, add all domains
@@ -48,12 +48,14 @@ void FEWarpConstraint::Init()
 
 	// allocate storage for Lagrange multipliers
 	m_Lm.assign(nint, vec3d(0,0,0));
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------
 void FEWarpConstraint::Residual(FEGlobalVector& R)
 {
-	FEModel& fem = *m_pfem;
+	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
 
 	vector<double> fe;
@@ -96,7 +98,7 @@ void FEWarpConstraint::Residual(FEGlobalVector& R)
 //-----------------------------------------------------------------------------
 void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, vector<double>& fe, double dens)
 {
-	FEModel& fem = *m_pfem;
+	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
 
 	// jacobian
@@ -144,7 +146,7 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 //-----------------------------------------------------------------------------
 void FEWarpConstraint::StiffnessMatrix(FESolver* psolver)
 {
-	FEModel& fem = *m_pfem;
+	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
 
 	// element stiffness matrix
@@ -231,7 +233,7 @@ bool FEWarpConstraint::Augment(int naug)
 {
 	if (m_blaugon == false) return true;
 
-	FEModel& fem = *m_pfem;
+	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
 
 	vector<vec3d> L0(m_Lm);

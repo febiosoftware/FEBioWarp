@@ -31,7 +31,7 @@ public:
 	~FEWarpSurfaceConstraint() {}
 
 	// Initialization
-	void Init();
+	bool Init();
 
 	// update
 	void Update();

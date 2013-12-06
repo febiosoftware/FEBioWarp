@@ -9,7 +9,7 @@ public:
 	~FEWarpImageConstraint() {}
 
 	// initialization
-	void Init();
+	bool Init();
 
 public:
 	ImageMap& GetTemplateMap() { return m_tmap; }

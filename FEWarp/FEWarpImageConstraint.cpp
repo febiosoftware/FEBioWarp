@@ -34,7 +34,7 @@ FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(p
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpImageConstraint::Init()
+bool FEWarpImageConstraint::Init()
 {
 	FEWarpConstraint::Init();
 
@@ -80,6 +80,8 @@ void FEWarpImageConstraint::Init()
 	image_derive_y(ds[0], dds[3]);
 	image_derive_z(ds[1], dds[4]);
 	image_derive_z(ds[0], dds[5]);
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------
