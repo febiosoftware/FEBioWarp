@@ -2,8 +2,8 @@
 //
 
 #include "stdafx.h"
-#include "FECore/febio.h"
-#include "FECore/FEBioFactory.h"
+#include "FECore/FECoreKernel.h"
+#include "FECore/FECoreFactory.h"
 #include "FEWarpImageConstraint.h"
 #include "FEWarpSurfaceConstraint.h"
 #include "FEWarpPlot.h"
@@ -14,70 +14,70 @@
 #define DLL_EXPORT
 #endif
 
-FEBioKernel* pFEBio;
+FECoreKernel* pFEBio;
 
 //-----------------------------------------------------------------------------
-class FEWarpImageConstraintFactory : public FEBioFactory
+class FEWarpImageConstraintFactory : public FECoreFactory
 {
 public:
-	FEWarpImageConstraintFactory() : FEBioFactory(FENLCONSTRAINT_ID, "warp-image"){}
+	FEWarpImageConstraintFactory() : FECoreFactory(FENLCONSTRAINT_ID, "warp-image"){}
 	void* Create(FEModel* pfem) { return new FEWarpImageConstraint(pfem); }
 };
 
 FEWarpImageConstraintFactory warp_image_factory;
 
 //-----------------------------------------------------------------------------
-class FEWarpMeshConstraintFactory : public FEBioFactory
+class FEWarpMeshConstraintFactory : public FECoreFactory
 {
 public:
-	FEWarpMeshConstraintFactory() : FEBioFactory(FENLCONSTRAINT_ID, "warp-mesh"){}
+	FEWarpMeshConstraintFactory() : FECoreFactory(FENLCONSTRAINT_ID, "warp-mesh"){}
 	void* Create(FEModel* pfem) { return new FEWarpSurfaceConstraint(pfem); }
 };
 
 FEWarpMeshConstraintFactory warp_mesh_factory;
 
 //-----------------------------------------------------------------------------
-class FEPlotTemplateFactory : public FEBioFactory
+class FEPlotTemplateFactory : public FECoreFactory
 {
 public:
-	FEPlotTemplateFactory() : FEBioFactory(FEPLOTDATA_ID, "template"){}
+	FEPlotTemplateFactory() : FECoreFactory(FEPLOTDATA_ID, "template"){}
 	void* Create(FEModel* pfem) { return new FEPlotTemplate(pfem); }
 };
 
 FEPlotTemplateFactory plot_template_factory;
 
 //-----------------------------------------------------------------------------
-class FEPlotTargetFactory : public FEBioFactory
+class FEPlotTargetFactory : public FECoreFactory
 {
 public:
-	FEPlotTargetFactory() : FEBioFactory(FEPLOTDATA_ID, "target"){}
+	FEPlotTargetFactory() : FECoreFactory(FEPLOTDATA_ID, "target"){}
 	void* Create(FEModel* pfem) { return new FEPlotTarget(pfem); }
 };
 
 FEPlotTargetFactory plot_target_factory;
 
 //-----------------------------------------------------------------------------
-class FEPlotEnergyFactory : public FEBioFactory
+class FEPlotEnergyFactory : public FECoreFactory
 {
 public:
-	FEPlotEnergyFactory() : FEBioFactory(FEPLOTDATA_ID, "energy"){}
+	FEPlotEnergyFactory() : FECoreFactory(FEPLOTDATA_ID, "energy"){}
 	void* Create(FEModel* pfem) { return new FEPlotEnergy(pfem); }
 };
 
 FEPlotEnergyFactory plot_energy_factory;
 
 //-----------------------------------------------------------------------------
-class FEPlotForceFactory : public FEBioFactory
+class FEPlotForceFactory : public FECoreFactory
 {
 public:
-	FEPlotForceFactory() : FEBioFactory(FEPLOTDATA_ID, "warp force"){}
+	FEPlotForceFactory() : FECoreFactory(FEPLOTDATA_ID, "warp force"){}
 	void* Create(FEModel* pfem) { return new FEPlotForce(pfem); }
 };
 
 FEPlotForceFactory plot_force_factory;
 
 //-----------------------------------------------------------------------------
-extern "C" DLL_EXPORT void PluginInitialize(FEBioKernel& febio)
+extern "C" DLL_EXPORT void PluginInitialize(FECoreKernel& febio)
 {
 
 }
@@ -95,7 +95,7 @@ extern "C" DLL_EXPORT int PluginNumClasses()
 }
 
 //-----------------------------------------------------------------------------
-extern "C" DLL_EXPORT FEBioFactory* PluginGetFactory(int i)
+extern "C" DLL_EXPORT FECoreFactory* PluginGetFactory(int i)
 {
 	switch (i)
 	{
