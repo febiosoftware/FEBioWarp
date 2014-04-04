@@ -129,6 +129,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="fecored.lib febiomechd.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -168,7 +169,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\fewarp\FEWarpForce.h"
+				RelativePath="..\FEWarp\FEWarpConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\FEWarp\FEWarpImageConstraint.h"
 				>
 			</File>
 			<File
@@ -176,7 +181,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\fewarp\Image.h"
+				RelativePath="..\FEWarp\FEWarpSurfaceConstraint.h"
 				>
 			</File>
 			<File
@@ -212,7 +217,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\fewarp\FEWarpForce.cpp"
+				RelativePath="..\FEWarp\FEWarpConstraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\FEWarp\FEWarpImageConstraint.cpp"
 				>
 			</File>
 			<File
@@ -220,7 +229,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\fewarp\Image.cpp"
+				RelativePath="..\FEWarp\FEWarpSurfaceConstraint.cpp"
 				>
 			</File>
 			<File
