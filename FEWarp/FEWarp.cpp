@@ -13,10 +13,10 @@ FECoreKernel* pFEBio;
 //! Factory classes for this plugin.
 FEPluginFactory_T<FEWarpImageConstraint  , FENLCONSTRAINT_ID> warp_image_factory   ("warp-image");
 FEPluginFactory_T<FEWarpSurfaceConstraint, FENLCONSTRAINT_ID> warp_mesh_factory    ("warp-mesh" );
-FEPluginFactory_T<FEPlotTemplate         , FEPLOTDATA_ID    > plot_template_factory("template"  );
-FEPluginFactory_T<FEPlotTarget           , FEPLOTDATA_ID    > plot_target_factory  ("target"    );
-FEPluginFactory_T<FEPlotEnergy           , FEPLOTDATA_ID    > plot_energy_factory  ("energy"    );
-FEPluginFactory_T<FEPlotForce            , FEPLOTDATA_ID    > plot_force_factory   ("warp force");
+FEPluginFactory_T<FEPlotTemplate         , FEPLOTDATA_ID    > plot_template_factory("warp-template");
+FEPluginFactory_T<FEPlotTarget           , FEPLOTDATA_ID    > plot_target_factory  ("warp-target"  );
+FEPluginFactory_T<FEPlotEnergy           , FEPLOTDATA_ID    > plot_energy_factory  ("warp-energy"  );
+FEPluginFactory_T<FEPlotForce            , FEPLOTDATA_ID    > plot_force_factory   ("warp-force"   );
 
 //-----------------------------------------------------------------------------
 FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
