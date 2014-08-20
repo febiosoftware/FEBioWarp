@@ -19,6 +19,12 @@ FEPluginFactory_T<FEPlotEnergy           , FEPLOTDATA_ID    > plot_energy_factor
 FEPluginFactory_T<FEPlotForce            , FEPLOTDATA_ID    > plot_force_factory   ("warp-force"   );
 
 //-----------------------------------------------------------------------------
+FECORE_EXPORT unsigned int GetSDKVersion()
+{
+	return FE_SDK_VERSION;
+}
+
+//-----------------------------------------------------------------------------
 FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 {
 
