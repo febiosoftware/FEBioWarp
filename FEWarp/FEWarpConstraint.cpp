@@ -2,8 +2,12 @@
 #include "FEWarpConstraint.h"
 #include <FEBioMech/FEElasticMaterial.h>
 #include <FECore/FEModel.h>
+#include <FECore/FECoreKernel.h>
+#include <FECore/Logfile.h>
 #include <iostream>
 using namespace std;
+
+extern FECoreKernel* pFEBio;
 
 //=============================================================================
 
@@ -281,7 +285,8 @@ bool FEWarpConstraint::Augment(int naug)
 
 	double Lerr = fabs((normL1 - normL0)/normL1);
 
-	printf("warping norm: %lg\n", Lerr);
+	Logfile& felog = pFEBio->GetLogfile();
+	felog.printf("warping norm: %lg\n", Lerr);
 
 	if (Lerr >= m_altol)
 	{
