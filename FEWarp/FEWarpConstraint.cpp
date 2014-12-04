@@ -286,7 +286,7 @@ bool FEWarpConstraint::Augment(int naug)
 	double Lerr = fabs((normL1 - normL0)/normL1);
 
 	Logfile& felog = pFEBio->GetLogfile();
-	felog.printf("warping norm: %lg\n", Lerr);
+	felog.printf("warping norm: %lg %lg\n", Lerr, m_altol);
 
 	if (Lerr >= m_altol)
 	{
