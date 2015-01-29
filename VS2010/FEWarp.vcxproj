@@ -56,8 +56,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(FEBIODir);$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Steve\Documents\Visual Studio 2010\Projects\FEBio2\VS2010\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(FEBIO2Dir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(FEBIO2Dir)\VS2010\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -67,7 +67,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(FEBIO2Dir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(FEBIO2Libs);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(FEBIO2Dir)\VS2010\Release\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>

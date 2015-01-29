@@ -14,7 +14,7 @@ bool FEPlotTemplate::Save(FEMesh &m, std::vector<float> &a)
 	{
 		FENLConstraint* pc = fem.NonlinearConstraint(i);
 		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(pc);
-		if (pci) { return SaveWarpImage(m, pci, a); }
+		if (pci && pci->IsActive()) { return SaveWarpImage(m, pci, a); }
 
 		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(pc);
 		if (pcs) { return SaveWarpMesh(m, pcs, a); }
@@ -52,7 +52,7 @@ bool FEPlotTarget::Save(FEMesh &m, std::vector<float> &a)
 	{
 		FENLConstraint* pc = fem.NonlinearConstraint(i);
 		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(pc);
-		if (pci) { return SaveWarpImage(m, pci, a); }
+		if (pci && pci->IsActive()) { return SaveWarpImage(m, pci, a); }
 
 		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(pc);
 		if (pcs) { return SaveWarpMesh(m, pcs, a); }
