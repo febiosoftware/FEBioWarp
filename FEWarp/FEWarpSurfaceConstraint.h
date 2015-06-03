@@ -49,6 +49,8 @@ public:
 	FEWarpSurface* GetTemplate() { return m_ptmp; }
 	FEWarpSurface* GetTarget  () { return m_ptrg; }
 
+	void ShallowCopy(DumpStream& dmp, bool bsave) {};
+
 protected:
 	FEWarpSurface*	m_ptmp;
 	FEWarpSurface*	m_ptrg;
