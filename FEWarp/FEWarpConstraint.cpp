@@ -57,7 +57,7 @@ bool FEWarpConstraint::Init()
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::Residual(FEGlobalVector& R)
+void FEWarpConstraint::Residual(FEGlobalVector& R, const FETimePoint& tp)
 {
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
@@ -148,7 +148,7 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::StiffnessMatrix(FESolver* psolver)
+void FEWarpConstraint::StiffnessMatrix(FESolver* psolver, const FETimePoint& tp)
 {
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
@@ -233,7 +233,7 @@ void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& 
 }
 
 //-----------------------------------------------------------------------------
-bool FEWarpConstraint::Augment(int naug)
+bool FEWarpConstraint::Augment(int naug, const FETimePoint& tp)
 {
 	if (m_blaugon == false) return true;
 

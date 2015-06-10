@@ -14,11 +14,12 @@ public:
 	// update
 	void Update();
 
+public: // inherited members
+	void ShallowCopy(DumpStream& dmp, bool bsave) {};
+
 public:
 	ImageMap& GetTemplateMap() { return m_tmap; }
 	ImageMap& GetTargetMap  () { return m_smap; }
-
-	void ShallowCopy(DumpStream& dmp, bool bsave) {};
 
 public:
 	//! Calculate the force at a material point
