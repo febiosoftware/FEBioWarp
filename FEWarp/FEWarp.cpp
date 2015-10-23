@@ -27,6 +27,7 @@ FECORE_EXPORT unsigned int GetSDKVersion()
 //-----------------------------------------------------------------------------
 FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 {
+	FECoreKernel::SetInstance(&febio);
 	pFEBio = &febio;
 }
 
