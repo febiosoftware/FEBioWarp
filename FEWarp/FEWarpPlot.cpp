@@ -5,85 +5,84 @@
 #include "FEWarpConstraint.h"
 #include "FEWarpImageConstraint.h"
 #include <FECore/FEModel.h>
+#include <FECore/FEDataStream.h>
 
-bool FEPlotTemplate::Save(FEMesh &m, std::vector<float> &a)
+bool FEPlotTemplate::Save(FEMesh &m, FEDataStream& s)
 {
 	FEModel& fem = *m_pfem;
-	a.assign(m.Nodes(), 0.f);
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
 		FENLConstraint* pc = fem.NonlinearConstraint(i);
 		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(pc);
-		if (pci && pci->IsActive()) { return SaveWarpImage(m, pci, a); }
+		if (pci && pci->IsActive()) { return SaveWarpImage(m, pci, s); }
 
 		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(pc);
-		if (pcs) { return SaveWarpMesh(m, pcs, a); }
+		if (pcs) { return SaveWarpMesh(m, pcs, s); }
 	}
 	return true;
 }
 
-bool FEPlotTemplate::SaveWarpImage(FEMesh& m, FEWarpImageConstraint* pc, vector<float>& a)
+bool FEPlotTemplate::SaveWarpImage(FEMesh& m, FEWarpImageConstraint* pc, FEDataStream& s)
 {
 	// get the template image map
 	ImageMap& tmap = pc->GetTemplateMap();
 
 	int N = m.Nodes();
-	for (int i=0; i<N; ++i) a[i] = (float) tmap.value(m.Node(i).m_r0);
+	for (int i=0; i<N; ++i) s << tmap.value(m.Node(i).m_r0);
 	return true;
 }
 
-bool FEPlotTemplate::SaveWarpMesh(FEMesh& m, FEWarpSurfaceConstraint* pc, vector<float>& a)
+bool FEPlotTemplate::SaveWarpMesh(FEMesh& m, FEWarpSurfaceConstraint* pc, FEDataStream& s)
 {
 	FEWarpSurface* ps = pc->GetTemplate();
 	ps->Update();
 	int N = m.Nodes();
 	for (int i=0; i<N; ++i)
 	{
-		a[i] = (float) ps->value(m.Node(i).m_r0);
+		s << ps->value(m.Node(i).m_r0);
 	}
 	return true;
 }
 
-bool FEPlotTarget::Save(FEMesh &m, std::vector<float> &a)
+bool FEPlotTarget::Save(FEMesh &m, FEDataStream& s)
 {
 	FEModel& fem = *m_pfem;
-	a.assign(m.Nodes(), 0.f);
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
 		FENLConstraint* pc = fem.NonlinearConstraint(i);
 		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(pc);
-		if (pci && pci->IsActive()) { return SaveWarpImage(m, pci, a); }
+		if (pci && pci->IsActive()) { return SaveWarpImage(m, pci, s); }
 
 		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(pc);
-		if (pcs) { return SaveWarpMesh(m, pcs, a); }
+		if (pcs) { return SaveWarpMesh(m, pcs, s); }
 	}
 	return true;
 }
 
 
-bool FEPlotTarget::SaveWarpImage(FEMesh& m, FEWarpImageConstraint* pc, vector<float>& a)
+bool FEPlotTarget::SaveWarpImage(FEMesh& m, FEWarpImageConstraint* pc, FEDataStream& s)
 {
 	// get the target image map
 	ImageMap& smap = pc->GetTargetMap();
 
 	int N = m.Nodes();
-	for (int i=0; i<N; ++i) a[i] = (float) smap.value(m.Node(i).m_rt);
+	for (int i=0; i<N; ++i) s << smap.value(m.Node(i).m_rt);
 	return true;
 }
 
-bool FEPlotTarget::SaveWarpMesh(FEMesh& m, FEWarpSurfaceConstraint* pc, vector<float>& a)
+bool FEPlotTarget::SaveWarpMesh(FEMesh& m, FEWarpSurfaceConstraint* pc, FEDataStream& s)
 {
 	FEWarpSurface* ps = pc->GetTarget();
 	ps->Update();
 	int N = m.Nodes();
 	for (int i=0; i<N; ++i)
 	{
-		a[i] = (float) ps->value(m.Node(i).m_rt);
+		s << ps->value(m.Node(i).m_rt);
 	}
 	return true;
 }
 
-bool FEPlotEnergy::Save(FEMesh &m, std::vector<float> &a)
+bool FEPlotEnergy::Save(FEMesh &m, FEDataStream& s)
 {
 	// find the warping constraint
 	FEModel& fem = *m_pfem;
@@ -104,12 +103,13 @@ bool FEPlotEnergy::Save(FEMesh &m, std::vector<float> &a)
 	{
 		double T = tmap.value(m.Node(i).m_r0);
 		double S = smap.value(m.Node(i).m_rt);
-		a.push_back((float) (0.5*(T-S)*(T-S)));
+
+		s << (0.5*(T - S)*(T - S));
 	}
 	return true;
 }
 
-bool FEPlotForce::Save(FEMesh &m, std::vector<float> &a)
+bool FEPlotForce::Save(FEMesh &m, FEDataStream& s)
 {
 	// find the warping constraint
 	FEModel& fem = *m_pfem;
@@ -136,9 +136,7 @@ bool FEPlotForce::Save(FEMesh &m, std::vector<float> &a)
 		vec3d G = smap.gradient(rt);
 		vec3d fw = G*((T - S));
 
-		a.push_back((float) fw.x);
-		a.push_back((float) fw.y);
-		a.push_back((float) fw.z);
+		s << fw;
 	}
 	return true;
 }

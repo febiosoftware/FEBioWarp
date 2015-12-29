@@ -309,3 +309,9 @@ void FEWarpConstraint::Serialize(DumpFile& ar)
 {
 
 }
+
+//-----------------------------------------------------------------------------
+void FEWarpConstraint::BuildMatrixProfile(FEGlobalMatrix& M)
+{
+	// nothing to do here.
+}

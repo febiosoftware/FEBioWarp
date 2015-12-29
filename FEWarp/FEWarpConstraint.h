@@ -21,6 +21,7 @@ public: // inherited members
 	bool Augment(int naug, const FETimePoint& tp);
 	void Serialize(DumpFile& ar);
 	void Update();
+	void BuildMatrixProfile(FEGlobalMatrix& M);
 
 protected:
 	void ElementWarpForce    (FESolidDomain& dom, FESolidElement& el, vector<double>& fe, double dens);
