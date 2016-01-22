@@ -10,8 +10,8 @@ BEGIN_PARAMETER_LIST(FEWarpImageConstraint, FEWarpConstraint);
 	ADD_PARAMETER(m_blaugon, FE_PARAM_BOOL    , "laugon"  );
 	ADD_PARAMETER(m_altol  , FE_PARAM_DOUBLE  , "altol"   );
 	ADD_PARAMETER(m_blur   , FE_PARAM_DOUBLE  , "blur"    );
-	ADD_PARAMETERV(m_r0    , FE_PARAM_DOUBLEV, 3, "range_min");
-	ADD_PARAMETERV(m_r1    , FE_PARAM_DOUBLEV, 3, "range_max");
+	ADD_PARAMETERV(m_r0    , FE_PARAM_DOUBLE, 3, "range_min");
+	ADD_PARAMETERV(m_r1    , FE_PARAM_DOUBLE, 3, "range_max");
 END_PARAMETER_LIST();
 
 //-----------------------------------------------------------------------------
