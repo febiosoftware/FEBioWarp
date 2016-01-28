@@ -305,9 +305,25 @@ void FEWarpConstraint::Update()
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::Serialize(DumpFile& ar)
+void FEWarpConstraint::Serialize(DumpStream& ar)
 {
+	FENLConstraint::Serialize(ar);
 
+	if (ar.IsShallow() == false)
+	{
+		if (ar.IsSaving())
+		{
+			ar << m_dom;
+			ar << m_Lm;
+			ar << m_nint;
+		}
+		else
+		{
+			ar >> m_dom;
+			ar >> m_Lm;
+			ar >> m_nint;
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
