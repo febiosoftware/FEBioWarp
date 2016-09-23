@@ -16,9 +16,9 @@ public:
 
 public: // inherited members
 	bool Init();
-	void Residual(FEGlobalVector& R, const FETimePoint& tp);
-	void StiffnessMatrix(FESolver* psolver, const FETimePoint& tp);
-	bool Augment(int naug, const FETimePoint& tp);
+	void Residual(FEGlobalVector& R, const FETimeInfo& tp);
+	void StiffnessMatrix(FESolver* psolver, const FETimeInfo& tp);
+	bool Augment(int naug, const FETimeInfo& tp);
 	void Serialize(DumpStream& ar);
 	void Update();
 	void BuildMatrixProfile(FEGlobalMatrix& M);
