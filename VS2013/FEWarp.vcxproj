@@ -105,8 +105,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(FEBIO2Dir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(FEBIO2Dir)\VS2010\x64\Release OpenMP;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(FEBIODir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(FEBIODir)\VS2013\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-SDK|x64'">
     <LinkIncremental>true</LinkIncremental>
