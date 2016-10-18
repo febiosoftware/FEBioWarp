@@ -1,9 +1,9 @@
 FEWARPDIR = $(dir $(CURDIR))
 
 # This needs to be set in order to find the febio .h files.
-FEBINC = $(HOME)/FEBio2
+FEBINC = $(HOME)/febio-2.5.1/sdk/include
 # This needs to be set in order to find the febio library files.
-FEBLIB = $(HOME)/FEBio2/build/lib
+FEBLIB = $(HOME)/febio-2.5.1/sdk/lib
 
 lnx64: PLAT = lnx64
 lnx32: PLAT = lnx32
