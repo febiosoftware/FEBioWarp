@@ -106,7 +106,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(FEBIODir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(FEBIODir)\VS2013\x64\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(FEBIODir)\VS2013\x64\Release OMP;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-SDK|x64'">
     <LinkIncremental>true</LinkIncremental>
