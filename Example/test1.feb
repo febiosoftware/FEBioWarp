@@ -21577,10 +21577,10 @@ Comments:
 	</Boundary>
 	<Constraints>
 		<constraint type="warp-image">
-			<template file="plugins/template.raw">
+			<template file="template.raw">
 				<size>64,64,1</size>
 			</template>
-			<target file="plugins/target.raw">
+			<target file="target.raw">
 				<size>64,64,1</size>
 			</target>
 			<range_min>0,0,0</range_min>
