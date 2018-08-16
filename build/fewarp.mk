@@ -1,11 +1,11 @@
+THIS = FEWarp
+SRC = $(wildcard $(FCDIR)$(THIS)/*.cpp)
+OBJ = $(patsubst $(FCDIR)$(THIS)/%.cpp, %.o, $(SRC))
+DEP = $(patsubst $(FCDIR)$(THIS)/%.cpp, %.d, $(SRC))
 
-SRC = $(wildcard $(FEWARPDIR)FEWarp/*.cpp)
-OBJ = $(patsubst $(FEWARPDIR)FEWarp/%.cpp, %.o, $(SRC))
-DEP = $(patsubst $(FEWARPDIR)FEWarp/%.cpp, %.d, $(SRC))
 
-
-SO = libfewarp_$(PLAT).$(SFX)
-LIB = $(FEWARPDIR)build/lib/$(SO)
+SO = lib$(PLGN)_$(PLAT).$(SFX)
+LIB = $(FCDIR)build/lib/$(SO)
 
 FECORE = $(FEBLIB)/libfecore_$(PLAT).a
 
@@ -17,14 +17,14 @@ FEBIOLIBS = $(NUMCORE) $(FECORE) $(FEBIOMECH)
 
 $(LIB): $(OBJ)
 ifeq ($(findstring lnx,$(PLAT)),lnx)
-		$(CC) $(LNKFLG) -shared -Wl,-soname,$(SO) -o $(LIB) $(OBJ) $(FEBIOLIBS)
+		$(CC) $(LNKFLG) -shared -Wl,-soname,$(SO) -o $(LIB) $(OBJ) $(FEBIOLIBS) $(INTEL_LIB)libiomp5.a
 else ifeq ($(findstring gcc,$(PLAT)),gcc)
-		$(CC) $(LNKFLG) -shared -Wl,-soname,$(SO) -o $(LIB) $(OBJ) $(FEBIOLIBS)
+		$(CC) $(LNKFLG) -shared -Wl,-soname,$(SO) -o $(LIB) $(OBJ) $(FEBIOLIBS) $(INTEL_LIB)libiomp5.a
 else
-		$(CC) -dynamiclib $(FLG) -o $(LIB) $(OBJ) $(FEBIOLIBS)
+		$(CC) -dynamiclib $(FLG) -o $(LIB) $(OBJ) $(FEBIOLIBS) $(INTEL_LIB)libiomp5.a
 endif
 
-%.o: $(FEWARPDIR)FEWarp/%.cpp
+%.o: $(FCDIR)$(THIS)/%.cpp
 	$(CC) $(INC) $(DEF) $(FLG) -MMD -c -o $@ $<
 
 clean:
