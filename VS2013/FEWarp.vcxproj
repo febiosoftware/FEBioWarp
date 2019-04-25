@@ -114,8 +114,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(FEBioReleaseDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(FEBioReleaseDir)\VS2013\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(FEBioDir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(FEBioDir)\VS2013\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
