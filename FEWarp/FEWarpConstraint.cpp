@@ -41,12 +41,15 @@ bool FEWarpConstraint::Init()
 	int ND = m_dom.size();
 	for (int i=0; i<ND; ++i)
 	{
-		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(m_dom[i]));
-		int NE = dom.Elements();
-		for (int j=0; j<NE; ++j)
+		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[i]));
+		if (dom)
 		{
-			FESolidElement& el = dom.Element(j);
-			nint += el.GaussPoints();
+			int NE = dom->Elements();
+			for (int j=0; j<NE; ++j)
+			{
+				FESolidElement& el = dom->Element(j);
+				nint += el.GaussPoints();
+			}
 		}
 	}
 
@@ -72,29 +75,31 @@ void FEWarpConstraint::Residual(FEGlobalVector& R, const FETimeInfo& tp)
 	int NDOM = m_dom.size();
 	for (int n=0; n<NDOM; ++n)
 	{
-		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(m_dom[n]));
-
-		// don't forget to multiply with the density
-		FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom.GetMaterial());
-		double dens = pme->Density();
-
-		int NEL = dom.Elements();
-		for (int i=0; i<NEL; ++i)
+		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[n]));
+		if (dom)
 		{
-			FESolidElement& el = dom.Element(i);
+			// don't forget to multiply with the density
+			FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom->GetMaterial());
+			double dens = pme->Density();
 
-			// get the element force vector and initialize it to zero
-			int ndof = 3*el.Nodes();
-			fe.assign(ndof, 0);
+			int NEL = dom->Elements();
+			for (int i=0; i<NEL; ++i)
+			{
+				FESolidElement& el = dom->Element(i);
 
-			// apply body forces
-			ElementWarpForce(dom, el, fe, dens);
+				// get the element force vector and initialize it to zero
+				int ndof = 3*el.Nodes();
+				fe.assign(ndof, 0);
 
-			// get the element's LM vector
-			dom.UnpackLM(el, lm);
+				// apply body forces
+				ElementWarpForce(*dom, el, fe, dens);
 
-			// assemble element 'fe'-vector into global R vector
-			R.Assemble(el.m_node, lm, fe);
+				// get the element's LM vector
+				dom->UnpackLM(el, lm);
+
+				// assemble element 'fe'-vector into global R vector
+				R.Assemble(el.m_node, lm, fe);
+			}
 		}
 	}
 }
@@ -161,31 +166,33 @@ void FEWarpConstraint::StiffnessMatrix(FESolver* psolver, const FETimeInfo& tp)
 	int NDOM = m_dom.size();
 	for (int n=0; n<NDOM; ++n)
 	{
-		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(m_dom[n]));
-
-		// don't forget to multiply with the density
-		FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom.GetMaterial());
-		double dens = pme->Density();
-
-		// repeat over all solid elements
-		int NE = dom.Elements();
-		for (int iel=0; iel<NE; ++iel)
+		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[n]));
+		if (dom)
 		{
-			FESolidElement& el = dom.Element(iel);
+			// don't forget to multiply with the density
+			FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom->GetMaterial());
+			double dens = pme->Density();
 
-			// create the element's stiffness matrix
-			int ndof = 3*el.Nodes();
-			ke.resize(ndof, ndof);
-			ke.zero();
+			// repeat over all solid elements
+			int NE = dom->Elements();
+			for (int iel=0; iel<NE; ++iel)
+			{
+				FESolidElement& el = dom->Element(iel);
 
-			// calculate inertial stiffness
-			ElementWarpStiffness(dom, el, ke, dens);
+				// create the element's stiffness matrix
+				int ndof = 3*el.Nodes();
+				ke.resize(ndof, ndof);
+				ke.zero();
 
-			// get the element's LM vector
-			dom.UnpackLM(el, lm);
+				// calculate inertial stiffness
+				ElementWarpStiffness(*dom, el, ke, dens);
 
-			// assemble element matrix in global stiffness matrix
-			psolver->AssembleStiffness(el.m_node, lm, ke);
+				// get the element's LM vector
+				dom->UnpackLM(el, lm);
+
+				// assemble element matrix in global stiffness matrix
+				psolver->AssembleStiffness(el.m_node, lm, ke);
+			}
 		}
 	}
 }
@@ -247,30 +254,33 @@ bool FEWarpConstraint::Augment(int naug, const FETimeInfo& tp)
 	int NDOM = m_dom.size();
 	for (int i=0; i<NDOM; ++i)
 	{
-		FESolidDomain& dom = dynamic_cast<FESolidDomain&>(mesh.Domain(m_dom[i]));
-		int NE = dom.Elements();
-		for (int j=0; j<NE; ++j)
+		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[i]));
+		if (dom)
 		{
-			FESolidElement& el = dom.Element(j);
-			int nint = el.GaussPoints();
-			int neln = el.Nodes();
-
-			// nodal coordinates
-			vec3d r0[FEElement::MAX_NODES], rt[FEElement::MAX_NODES];
-			for (int i=0; i<neln; ++i)
+			int NE = dom->Elements();
+			for (int j=0; j<NE; ++j)
 			{
-				r0[i] = mesh.Node(el.m_node[i]).m_r0;
-				rt[i] = mesh.Node(el.m_node[i]).m_rt;
-			}
+				FESolidElement& el = dom->Element(j);
+				int nint = el.GaussPoints();
+				int neln = el.Nodes();
 
-			for (int n=0; n<nint; ++n, ++m_nint)
-			{
-				FEMaterialPoint& mp = *el.GetMaterialPoint(n);
-				FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-				pt.m_r0 = el.Evaluate(r0, n);
-				pt.m_rt = el.Evaluate(rt, n);
+				// nodal coordinates
+				vec3d r0[FEElement::MAX_NODES], rt[FEElement::MAX_NODES];
+				for (int i=0; i<neln; ++i)
+				{
+					r0[i] = mesh.Node(el.m_node[i]).m_r0;
+					rt[i] = mesh.Node(el.m_node[i]).m_rt;
+				}
 
-				L1[m_nint] = L0[m_nint] + wrpForce(pt);
+				for (int n=0; n<nint; ++n, ++m_nint)
+				{
+					FEMaterialPoint& mp = *el.GetMaterialPoint(n);
+					FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
+					pt.m_r0 = el.Evaluate(r0, n);
+					pt.m_rt = el.Evaluate(rt, n);
+
+					L1[m_nint] = L0[m_nint] + wrpForce(pt);
+				}
 			}
 		}
 	}

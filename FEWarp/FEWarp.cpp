@@ -32,6 +32,14 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 }
 
 //-----------------------------------------------------------------------------
+FECORE_EXPORT void GetPluginVersion(int& maj, int& min, int& patch)
+{
+	maj = 1;
+	min = 0;
+	patch = 1;
+}
+
+//-----------------------------------------------------------------------------
 FECORE_EXPORT void PluginCleanup()
 {
 
