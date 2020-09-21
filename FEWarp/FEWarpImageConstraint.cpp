@@ -3,16 +3,16 @@
 #include <FEBioMech/FEElasticMaterial.h>
 
 //-----------------------------------------------------------------------------
-BEGIN_PARAMETER_LIST(FEWarpImageConstraint, FEWarpConstraint);
-	ADD_PARAMETER(m_tmp0   , FE_PARAM_IMAGE_3D, "template");
-	ADD_PARAMETER(m_trg0   , FE_PARAM_IMAGE_3D, "target"  );
-	ADD_PARAMETER(m_k      , FE_PARAM_DOUBLE  , "penalty" );
-	ADD_PARAMETER(m_blaugon, FE_PARAM_BOOL    , "laugon"  );
-	ADD_PARAMETER(m_altol  , FE_PARAM_DOUBLE  , "altol"   );
-	ADD_PARAMETER(m_blur   , FE_PARAM_DOUBLE  , "blur"    );
-	ADD_PARAMETERV(m_r0    , FE_PARAM_DOUBLE, 3, "range_min");
-	ADD_PARAMETERV(m_r1    , FE_PARAM_DOUBLE, 3, "range_max");
-END_PARAMETER_LIST();
+BEGIN_FECORE_CLASS(FEWarpImageConstraint, FEWarpConstraint);
+	ADD_PARAMETER(m_tmp0   , "template");
+	ADD_PARAMETER(m_trg0   , "target"  );
+	ADD_PARAMETER(m_k      , "penalty" );
+	ADD_PARAMETER(m_blaugon, "laugon"  );
+	ADD_PARAMETER(m_altol  , "altol"   );
+	ADD_PARAMETER(m_blur   , "blur"    );
+	ADD_PARAMETER(m_r0    , 3, "range_min");
+	ADD_PARAMETER(m_r1    , 3, "range_max");
+END_FECORE_CLASS();
 
 //-----------------------------------------------------------------------------
 void blur_image_2d(Image& trg, Image& src, float d)

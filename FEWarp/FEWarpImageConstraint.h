@@ -45,5 +45,5 @@ protected:
 	Image m_trg0;	//!< original target image data (pre-blurred)
 
 public:
-	DECLARE_PARAMETER_LIST();
+	DECLARE_FECORE_CLASS();
 };

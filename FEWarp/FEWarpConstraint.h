@@ -16,16 +16,16 @@ public:
 
 public: // inherited members
 	bool Init();
-	void Residual(FEGlobalVector& R, const FETimeInfo& tp);
-	void StiffnessMatrix(FESolver* psolver, const FETimeInfo& tp);
-	bool Augment(int naug, const FETimeInfo& tp);
-	void Serialize(DumpStream& ar);
-	void Update();
-	void BuildMatrixProfile(FEGlobalMatrix& M);
+	void LoadVector(FEGlobalVector& R, const FETimeInfo& tp) override;
+	void StiffnessMatrix(FELinearSystem& LS, const FETimeInfo& tp) override;
+	bool Augment(int naug, const FETimeInfo& tp) override;
+	void Serialize(DumpStream& ar) override;
+	void Update() override;
+	void BuildMatrixProfile(FEGlobalMatrix& M) override;
 
 protected:
-	void ElementWarpForce    (FESolidDomain& dom, FESolidElement& el, vector<double>& fe, double dens);
-	void ElementWarpStiffness(FESolidDomain& dom, FESolidElement& el, matrix& ke, double dens);
+	void ElementWarpForce    (FESolidDomain& dom, FESolidElement& el, vector<double>& fe);
+	void ElementWarpStiffness(FESolidDomain& dom, FESolidElement& el, matrix& ke);
 
 	//! Calculate the force at a material point
 	virtual vec3d wrpForce(FEMaterialPoint& pt) = 0;

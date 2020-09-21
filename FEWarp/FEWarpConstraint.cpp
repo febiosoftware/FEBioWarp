@@ -3,7 +3,7 @@
 #include <FEBioMech/FEElasticMaterial.h>
 #include <FECore/FEModel.h>
 #include <FECore/FECoreKernel.h>
-#include <FECore/Logfile.h>
+#include <FECore/log.h>
 #include <iostream>
 using namespace std;
 
@@ -60,7 +60,7 @@ bool FEWarpConstraint::Init()
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::Residual(FEGlobalVector& R, const FETimeInfo& tp)
+void FEWarpConstraint::LoadVector(FEGlobalVector& R, const FETimeInfo& tp)
 {
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
@@ -78,10 +78,6 @@ void FEWarpConstraint::Residual(FEGlobalVector& R, const FETimeInfo& tp)
 		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[n]));
 		if (dom)
 		{
-			// don't forget to multiply with the density
-			FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom->GetMaterial());
-			double dens = pme->Density();
-
 			int NEL = dom->Elements();
 			for (int i=0; i<NEL; ++i)
 			{
@@ -92,7 +88,7 @@ void FEWarpConstraint::Residual(FEGlobalVector& R, const FETimeInfo& tp)
 				fe.assign(ndof, 0);
 
 				// apply body forces
-				ElementWarpForce(*dom, el, fe, dens);
+				ElementWarpForce(*dom, el, fe);
 
 				// get the element's LM vector
 				dom->UnpackLM(el, lm);
@@ -105,7 +101,7 @@ void FEWarpConstraint::Residual(FEGlobalVector& R, const FETimeInfo& tp)
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, vector<double>& fe, double dens)
+void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, vector<double>& fe)
 {
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
@@ -115,6 +111,8 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 	double *H;
 	double* gw = el.GaussWeights();
 	vec3d f;
+
+	FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom.GetMaterial());
 
 	// number of nodes
 	int neln = el.Nodes();
@@ -143,6 +141,9 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 
 		H = el.H(n);
 
+		// don't forget to multiply with the density
+		double dens = pme->Density(mp);
+
 		for (int i=0; i<neln; ++i)
 		{
 			fe[3*i  ] -= H[i]*dens*f.x*detJ;
@@ -153,13 +154,12 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::StiffnessMatrix(FESolver* psolver, const FETimeInfo& tp)
+void FEWarpConstraint::StiffnessMatrix(FELinearSystem& LS, const FETimeInfo& tp)
 {
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
 
 	// element stiffness matrix
-	matrix ke;
 	vector<int> lm;
 
 	// loop over all domains
@@ -169,10 +169,6 @@ void FEWarpConstraint::StiffnessMatrix(FESolver* psolver, const FETimeInfo& tp)
 		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[n]));
 		if (dom)
 		{
-			// don't forget to multiply with the density
-			FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom->GetMaterial());
-			double dens = pme->Density();
-
 			// repeat over all solid elements
 			int NE = dom->Elements();
 			for (int iel=0; iel<NE; ++iel)
@@ -180,25 +176,28 @@ void FEWarpConstraint::StiffnessMatrix(FESolver* psolver, const FETimeInfo& tp)
 				FESolidElement& el = dom->Element(iel);
 
 				// create the element's stiffness matrix
+				FEElementMatrix ke;
 				int ndof = 3*el.Nodes();
 				ke.resize(ndof, ndof);
 				ke.zero();
 
 				// calculate inertial stiffness
-				ElementWarpStiffness(*dom, el, ke, dens);
+				ElementWarpStiffness(*dom, el, ke);
 
 				// get the element's LM vector
 				dom->UnpackLM(el, lm);
 
 				// assemble element matrix in global stiffness matrix
-				psolver->AssembleStiffness(el.m_node, lm, ke);
+				ke.SetIndices(lm);
+				ke.SetNodes(el.m_node);
+				LS.Assemble(ke);
 			}
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& el, matrix& ke, double dens)
+void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& el, matrix& ke)
 {
 	int neln = el.Nodes();
 	int ndof = ke.columns()/neln;
@@ -208,6 +207,8 @@ void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& 
 	double *H;
 	double* gw = el.GaussWeights();
 	mat3ds K;
+
+	FESolidMaterial* pme = dynamic_cast<FESolidMaterial*>(dom.GetMaterial());
 
 	// loop over integration points
 	int nint = el.GaussPoints();
@@ -220,6 +221,8 @@ void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& 
 		K = wrpStiffness(mp);
 
 		H = el.H(n);
+
+		double dens = pme->Density(mp);
 
 		for (int i=0; i<neln; ++i)
 			for (int j=0; j<neln; ++j)
@@ -295,8 +298,7 @@ bool FEWarpConstraint::Augment(int naug, const FETimeInfo& tp)
 
 	double Lerr = fabs((normL1 - normL0)/normL1);
 
-	Logfile& felog = pFEBio->GetLogfile();
-	felog.printf("warping norm: %lg %lg\n", Lerr, m_altol);
+	feLog("warping norm: %lg %lg\n", Lerr, m_altol);
 
 	if (Lerr >= m_altol)
 	{

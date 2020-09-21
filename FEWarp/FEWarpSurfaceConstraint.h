@@ -8,7 +8,7 @@
 class FEWarpSurface : public FESurface
 {
 public:
-	FEWarpSurface(FEMesh* pm);
+	FEWarpSurface(FEModel* fem);
 	~FEWarpSurface(){}
 
 public:
@@ -56,5 +56,5 @@ protected:
 	FEWarpSurface*	m_ptrg;
 
 public:
-	DECLARE_PARAMETER_LIST();
+	DECLARE_FECORE_CLASS();
 };

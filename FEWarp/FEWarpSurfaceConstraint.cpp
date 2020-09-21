@@ -4,7 +4,7 @@
 #include <FECore/FEModel.h>
 
 //=============================================================================
-FEWarpSurface::FEWarpSurface(FEMesh* pm) : FESurface(pm)
+FEWarpSurface::FEWarpSurface(FEModel* fem) : FESurface(fem)
 {
 	m_binit = true;
 	m_beta = 50.0;
@@ -36,17 +36,17 @@ void FEWarpSurface::Update()
 }
 
 //=============================================================================
-BEGIN_PARAMETER_LIST(FEWarpSurfaceConstraint, FEWarpConstraint);
-	ADD_PARAMETER(m_k      , FE_PARAM_DOUBLE  , "penalty" );
-	ADD_PARAMETER(m_blaugon, FE_PARAM_BOOL    , "laugon"  );
-	ADD_PARAMETER(m_altol  , FE_PARAM_DOUBLE  , "altol"   );
-END_PARAMETER_LIST();
+BEGIN_FECORE_CLASS(FEWarpSurfaceConstraint, FEWarpConstraint);
+	ADD_PARAMETER(m_k      , "penalty" );
+	ADD_PARAMETER(m_blaugon, "laugon"  );
+	ADD_PARAMETER(m_altol  , "altol"   );
+END_FECORE_CLASS();
 
 //-----------------------------------------------------------------------------
 FEWarpSurfaceConstraint::FEWarpSurfaceConstraint(FEModel* pfem) : FEWarpConstraint(pfem)
 {
-	m_ptmp = new FEWarpSurface(&pfem->GetMesh());
-	m_ptrg = new FEWarpSurface(&pfem->GetMesh());
+	m_ptmp = new FEWarpSurface(pfem);
+	m_ptrg = new FEWarpSurface(pfem);
 }
 
 //-----------------------------------------------------------------------------

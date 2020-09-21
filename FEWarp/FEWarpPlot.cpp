@@ -8,7 +8,7 @@
 
 bool FEPlotTemplate::Save(FEMesh &m, FEDataStream& s)
 {
-	FEModel& fem = *m_pfem;
+	FEModel& fem = *GetFEModel();
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
 		FENLConstraint* pc = fem.NonlinearConstraint(i);
@@ -45,7 +45,7 @@ bool FEPlotTemplate::SaveWarpMesh(FEMesh& m, FEWarpSurfaceConstraint* pc, FEData
 
 bool FEPlotTarget::Save(FEMesh &m, FEDataStream& s)
 {
-	FEModel& fem = *m_pfem;
+	FEModel& fem = *GetFEModel();
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
 		FENLConstraint* pc = fem.NonlinearConstraint(i);
@@ -84,7 +84,7 @@ bool FEPlotTarget::SaveWarpMesh(FEMesh& m, FEWarpSurfaceConstraint* pc, FEDataSt
 bool FEPlotEnergy::Save(FEMesh &m, FEDataStream& s)
 {
 	// find the warping constraint
-	FEModel& fem = *m_pfem;
+	FEModel& fem = *GetFEModel();
 	FEWarpImageConstraint* pc = 0;
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
@@ -111,7 +111,7 @@ bool FEPlotEnergy::Save(FEMesh &m, FEDataStream& s)
 bool FEPlotForce::Save(FEMesh &m, FEDataStream& s)
 {
 	// find the warping constraint
-	FEModel& fem = *m_pfem;
+	FEModel& fem = *GetFEModel();
 	FEWarpImageConstraint* pc = 0;
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{

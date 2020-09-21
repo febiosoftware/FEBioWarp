@@ -4,48 +4,38 @@
 #include "FEWarpImageConstraint.h"
 #include "FEWarpSurfaceConstraint.h"
 
-class FEPlotTemplate : public FENodeData
+class FEPlotTemplate : public FEPlotNodeData
 {
 public:
-	FEPlotTemplate(FEModel* pfem) : FENodeData(PLT_FLOAT, FMT_NODE), m_pfem(pfem) {}
+	FEPlotTemplate(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
 	virtual bool Save(FEMesh& m, FEDataStream& s);
 
 protected:
 	bool SaveWarpImage(FEMesh& m, FEWarpImageConstraint*   pc, FEDataStream& s);
 	bool SaveWarpMesh(FEMesh& m, FEWarpSurfaceConstraint* pc, FEDataStream& s);
-
-protected:
-	FEModel*	m_pfem;
 };
 
-class FEPlotTarget : public FENodeData
+class FEPlotTarget : public FEPlotNodeData
 {
 public:
-	FEPlotTarget(FEModel* pfem) : FENodeData(PLT_FLOAT, FMT_NODE), m_pfem(pfem) {}
+	FEPlotTarget(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
 	virtual bool Save(FEMesh& m, FEDataStream& s);
 
 protected:
 	bool SaveWarpImage(FEMesh& m, FEWarpImageConstraint*   pc, FEDataStream& s);
 	bool SaveWarpMesh(FEMesh& m, FEWarpSurfaceConstraint* pc, FEDataStream& s);
-
-protected:
-	FEModel*	m_pfem;
 };
 
-class FEPlotEnergy : public FENodeData
+class FEPlotEnergy : public FEPlotNodeData
 {
 public:
-	FEPlotEnergy(FEModel* pfem) : FENodeData(PLT_FLOAT, FMT_NODE), m_pfem(pfem) {}
+	FEPlotEnergy(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
 	virtual bool Save(FEMesh& m, FEDataStream& s);
-protected:
-	FEModel*	m_pfem;
 };
 
-class FEPlotForce : public FENodeData
+class FEPlotForce : public FEPlotNodeData
 {
 public:
-	FEPlotForce(FEModel* pfem) : FENodeData(PLT_VEC3F, FMT_NODE), m_pfem(pfem) {}
+	FEPlotForce(FEModel* pfem) : FEPlotNodeData(pfem, PLT_VEC3F, FMT_NODE) {}
 	virtual bool Save(FEMesh& m, FEDataStream& s);
-protected:
-	FEModel*	m_pfem;
 };
