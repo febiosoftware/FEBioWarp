@@ -1,5 +1,5 @@
 #pragma once
-#include <FECore/FENLConstraint.h>
+#include <FECore/FEBodyConstraint.h>
 #include <FECore/FEMaterialPoint.h>
 #include <FECore/FESolidDomain.h>
 #include <FECore/Image.h>
@@ -8,7 +8,7 @@
 //-----------------------------------------------------------------------------
 // This class implements a warping constraint. This is a image-based constraint
 // where the goal is to map a template image onto a target image.
-class FEWarpConstraint : public FENLConstraint
+class FEWarpConstraint : public FEBodyConstraint
 {
 public:
 	FEWarpConstraint(FEModel* pfem);

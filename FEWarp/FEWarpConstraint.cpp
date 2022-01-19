@@ -11,7 +11,7 @@ extern FECoreKernel* pFEBio;
 
 //=============================================================================
 
-FEWarpConstraint::FEWarpConstraint(FEModel* pfem) : FENLConstraint(pfem)
+FEWarpConstraint::FEWarpConstraint(FEModel* pfem) : FEBodyConstraint(pfem)
 {
 	m_blaugon = false;
 	m_altol = 0.1;
