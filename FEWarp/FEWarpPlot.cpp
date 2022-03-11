@@ -12,12 +12,12 @@ bool FEPlotTemplate::Save(FEMesh &m, FEDataStream& s)
 	FEModel& fem = *GetFEModel();
 	FEAnalysis* step = fem.GetCurrentStep();
 	if (step == nullptr) return false;
-	for (int i=0; i<step->ModelComponents(); ++i)
+	for (int i=0; i<step->StepComponents(); ++i)
 	{
-		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(step->GetModelComponent(i));
+		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(step->GetStepComponent(i));
 		if (pci) { return SaveWarpImage(m, pci, s); }
 
-		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(step->GetModelComponent(i));
+		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(step->GetStepComponent(i));
 		if (pcs) { return SaveWarpMesh(m, pcs, s); }
 	}
 	return true;
@@ -50,12 +50,12 @@ bool FEPlotTarget::Save(FEMesh &m, FEDataStream& s)
 	FEModel& fem = *GetFEModel();
 	FEAnalysis* step = fem.GetCurrentStep();
 	if (step == nullptr) return false;
-	for (int i = 0; i < step->ModelComponents(); ++i)
+	for (int i = 0; i < step->StepComponents(); ++i)
 	{
-		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(step->GetModelComponent(i));
+		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(step->GetStepComponent(i));
 		if (pci) { return SaveWarpImage(m, pci, s); }
 
-		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(step->GetModelComponent(i));
+		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(step->GetStepComponent(i));
 		if (pcs) { return SaveWarpMesh(m, pcs, s); }
 	}
 	return true;
