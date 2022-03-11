@@ -26,7 +26,7 @@ void blur_image_2d(Image& trg, Image& src, float d)
 	int ny = src.height();
 	int nz = src.depth();
 
-	trg.Create(nx, ny, nz);
+	trg = src;
 	Image tmp(src);
 	float f[4];
 	for (int l=0; l<n; ++l)
@@ -73,7 +73,7 @@ void blur_image(Image& trg, Image& src, float d)
 	int ny = src.height();
 	int nz = src.depth();
 
-	trg.Create(nx, ny, nz);
+	trg = src;
 	Image tmp(src);
 	float f[6];
 	for (int l=0; l<n; ++l)
