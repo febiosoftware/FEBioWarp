@@ -1,5 +1,6 @@
 #pragma once
 #include "FEWarpConstraint.h"
+#include <FECore/FEImageSource.h>
 
 //-----------------------------------------------------------------------------
 class FEWarpImageConstraint : public FEWarpConstraint
@@ -40,6 +41,9 @@ protected:
 
 	ImageMap m_tmap;
 	ImageMap m_smap;
+
+	FEImageSource*	m_tmpReader;
+	FEImageSource*	m_trgReader;
 	
 	Image m_tmp0;	//!< original template image data (pre-blurred)
 	Image m_trg0;	//!< original target image data (pre-blurred)

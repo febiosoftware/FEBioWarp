@@ -4,14 +4,15 @@
 
 //-----------------------------------------------------------------------------
 BEGIN_FECORE_CLASS(FEWarpImageConstraint, FEWarpConstraint);
-	ADD_PARAMETER(m_tmp0   , "template");
-	ADD_PARAMETER(m_trg0   , "target"  );
 	ADD_PARAMETER(m_k      , "penalty" );
 	ADD_PARAMETER(m_blaugon, "laugon"  );
 	ADD_PARAMETER(m_altol  , "altol"   );
 	ADD_PARAMETER(m_blur   , "blur"    );
 	ADD_PARAMETER(m_r0    , 3, "range_min");
 	ADD_PARAMETER(m_r1    , 3, "range_max");
+
+	ADD_PROPERTY(m_tmpReader, "template")->SetDefaultType("raw");
+	ADD_PROPERTY(m_trgReader, "target"  )->SetDefaultType("raw");
 END_FECORE_CLASS();
 
 //-----------------------------------------------------------------------------
@@ -115,6 +116,9 @@ void blur_image(Image& trg, Image& src, float d)
 //-----------------------------------------------------------------------------
 FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(pfem), m_tmap(m_tmp), m_smap(m_trg)
 {
+	m_tmpReader = nullptr;
+	m_trgReader = nullptr;
+
 	m_blur = 0.0;
 	m_blur_cur = 0.0;
 }
@@ -122,7 +126,12 @@ FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(p
 //-----------------------------------------------------------------------------
 bool FEWarpImageConstraint::Init()
 {
-	FEWarpConstraint::Init();
+	if ((m_tmpReader == nullptr) || (m_trgReader == nullptr)) return false;
+
+	if (FEWarpConstraint::Init() == false) return false;
+
+	if (m_tmpReader->GetImage3D(m_tmp0) == false) return false;
+	if (m_trgReader->GetImage3D(m_trg0) == false) return false;
 
 	int nx = m_tmp0.width ();
 	int ny = m_tmp0.height();
