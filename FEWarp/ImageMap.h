@@ -1,5 +1,5 @@
 #pragma once
-#include <FECore/Image.h>
+#include <FEImgLib/Image.h>
 #include <FECore/vec3d.h>
 #include <FECore/mat3d.h>
 

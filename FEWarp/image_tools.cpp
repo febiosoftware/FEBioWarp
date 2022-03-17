@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "image_tools.h"
-#include <FECore/Image.h>
+#include <FEImgLib/Image.h>
 
 //-----------------------------------------------------------------------------
 void blur_image_2d(Image& trg, Image& src, float d)

@@ -2,8 +2,6 @@
 #include <FECore/FEBodyConstraint.h>
 #include <FECore/FEMaterialPoint.h>
 #include <FECore/FESolidDomain.h>
-#include <FECore/Image.h>
-#include "ImageMap.h"
 
 //-----------------------------------------------------------------------------
 // This class implements a warping constraint. This is a image-based constraint
