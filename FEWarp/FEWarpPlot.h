@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FECore/FEPlotData.h"
+#include <FECore/FEPlotData.h>
 #include "FEWarpImageConstraint.h"
 #include "FEWarpSurfaceConstraint.h"
 

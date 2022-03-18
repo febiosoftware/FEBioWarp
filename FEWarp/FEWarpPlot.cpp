@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "FEWarpPlot.h"
-#include "ImageMap.h"
 #include "FEWarpConstraint.h"
 #include "FEWarpImageConstraint.h"
 #include <FECore/FEModel.h>

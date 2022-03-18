@@ -1,7 +1,7 @@
 #pragma once
 #include "FEWarpConstraint.h"
 #include <FEImgLib/FEImageSource.h>
-#include "ImageMap.h"
+#include <FEImgLib/ImageMap.h>
 
 //-----------------------------------------------------------------------------
 class FEWarpImageConstraint : public FEWarpConstraint

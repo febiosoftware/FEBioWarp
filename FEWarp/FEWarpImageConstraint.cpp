@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FEWarpImageConstraint.h"
 #include <FEBioMech/FEElasticMaterial.h>
-#include "image_tools.h"
+#include <FEImgLib/image_tools.h>
 
 //-----------------------------------------------------------------------------
 BEGIN_FECORE_CLASS(FEWarpImageConstraint, FEWarpConstraint);
