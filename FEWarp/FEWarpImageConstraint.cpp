@@ -24,6 +24,9 @@ FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(p
 
 	m_blur = 0.0;
 	m_blur_cur = 0.0;
+
+	m_r0[0] = m_r0[1] = m_r0[2] = 0.0;
+	m_r1[0] = m_r1[1] = m_r1[2] = 1.0;
 }
 
 //-----------------------------------------------------------------------------
