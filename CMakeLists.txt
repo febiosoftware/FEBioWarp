@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(FEBioWarp)
@@ -137,6 +137,7 @@ if(FEBio_LIB_DIR)
     findLib(FECore FEBio_LIB_DIR FECORE)
     findLib(FEBioMech FEBio_LIB_DIR FEBIOMECH)
     findLib(NumCore FEBio_LIB_DIR NUMCORE)
+    findLib(FEImgLib FEBio_LIB_DIR FEIMGLIB)
 endif()
 
 ##### Set appropriate defines and includes #####
@@ -171,4 +172,4 @@ set_property(TARGET FEBioWarp PROPERTY AUTOGEN_BUILD_DIR ${CMAKE_BINARY_DIR}/CMa
 
 ##### Link Libraries #####
 
-target_link_libraries(FEBioWarp ${FECORE} ${FEBIOMECH} ${NUMCORE})
+target_link_libraries(FEBioWarp ${FECORE} ${FEBIOMECH} ${NUMCORE} ${FEIMGLIB})
