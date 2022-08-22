@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include <FECore/FECoreKernel.h>
+#include <FECore/FEModelUpdate.h>
 #include "FEWarpImageConstraint.h"
 #include "FEWarpImageConstraint2.h"
 #include "FEWarpSurfaceConstraint.h"
@@ -31,6 +32,15 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 	REGISTER_FECORE_CLASS(FEPlotTarget  , "warp-target"  );
 	REGISTER_FECORE_CLASS(FEPlotEnergy  , "warp-energy"  );
 	REGISTER_FECORE_CLASS(FEPlotForce   , "warp-force"   );
+
+	// model updates
+	febio.OnCreateEvent(UpdateModelWhenCreating<FEWarpImageConstraint>([](FEModelUpdate& fem) {
+		fem.AddPlotVariable("warp-template");
+		fem.AddPlotVariable("warp-target");
+		fem.AddPlotVariable("warp-energy");
+		fem.AddPlotVariable("warp-force");
+		})
+	);
 }
 
 //-----------------------------------------------------------------------------
