@@ -389,3 +389,5 @@ MigrationBackup/
 # miscellaneous
 Documentation/Doxygen/doc
 VS2019/
+vs22/
+cmbuild/
