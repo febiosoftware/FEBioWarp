@@ -10,6 +10,15 @@
 #include "FEWarpPlot.h"
 
 //-----------------------------------------------------------------------------
+void UpdateWarpModel(FECoreBase* pc, FEModelUpdate& fem)
+{
+	if (dynamic_cast<FEWarpImageConstraint*>(pc))
+	{
+		fem.AddPlotVariable("warp-template");
+	}
+}
+
+//-----------------------------------------------------------------------------
 FECORE_EXPORT unsigned int GetSDKVersion()
 {
 	return FE_SDK_VERSION;
