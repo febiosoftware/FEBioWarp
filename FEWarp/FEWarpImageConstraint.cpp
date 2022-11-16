@@ -55,8 +55,13 @@ bool FEWarpImageConstraint::Init()
 	m_blur_cur = m_blur;
 	if (m_blur > 0)
 	{
+#ifdef HAVE_MKL
+		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
+		if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); else fftblur_3d(m_trg, m_trg0, (float)m_blur);
+#else
 		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float) m_blur); else blur_image(m_tmp, m_tmp0, (float) m_blur);
 		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float) m_blur); else blur_image(m_trg, m_trg0, (float) m_blur);
+#endif
 	}
 
 	return true;
@@ -71,24 +76,28 @@ void FEWarpImageConstraint::Update()
 	if (m_blur !=  m_blur_cur)
 	{
 		m_blur_cur = m_blur;
+
+#ifdef HAVE_MKL
+		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
+		if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); else fftblur_3d(m_trg, m_trg0, (float)m_blur);
+#else
 		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float) m_blur); else blur_image(m_tmp, m_tmp0, (float) m_blur);
 		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float) m_blur); else blur_image(m_trg, m_trg0, (float) m_blur);
+#endif
 	}
 }
 
 //-----------------------------------------------------------------------------
 vec3d FEWarpImageConstraint::wrpForce(FEMaterialPoint& mp)
 {
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-
 	// evaluate template
-	double T = m_tmap.value(pt.m_r0);
+	double T = m_tmap.value(mp.m_r0);
 
 	// evaluate target
-	double S = m_smap.value(pt.m_rt);
+	double S = m_smap.value(mp.m_rt);
 
 	// evaluate target gradient
-	vec3d G = m_smap.gradient(pt.m_rt);
+	vec3d G = m_smap.gradient(mp.m_rt);
 
 	// evaluate force
 	vec3d Fw = G*((S - T)*m_k);
@@ -99,19 +108,17 @@ vec3d FEWarpImageConstraint::wrpForce(FEMaterialPoint& mp)
 //-----------------------------------------------------------------------------
 mat3ds FEWarpImageConstraint::wrpStiffness(FEMaterialPoint& mp)
 {
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-
 	// template value
-	double T = m_tmap.value(pt.m_r0);
+	double T = m_tmap.value(mp.m_r0);
 
 	// target value
-	double S = m_smap.value(pt.m_rt);
+	double S = m_smap.value(mp.m_rt);
 
 	// calculate target gradient
-	vec3d dS = m_smap.gradient(pt.m_rt);
+	vec3d dS = m_smap.gradient(mp.m_rt);
 
 	// calculate target hessian
-	mat3ds H = m_smap.hessian(pt.m_rt);
+	mat3ds H = m_smap.hessian(mp.m_rt);
 
 	// warping stiffness
 	return H*((T - S)*m_k) - dyad(dS)*m_k;

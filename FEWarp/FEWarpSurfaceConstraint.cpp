@@ -71,11 +71,9 @@ bool FEWarpSurfaceConstraint::Init()
 //-----------------------------------------------------------------------------
 vec3d FEWarpSurfaceConstraint::wrpForce(FEMaterialPoint& mp)
 {
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-
 	// get the initial and current position
-	vec3d r0 = pt.m_r0;
-	vec3d rt = pt.m_rt;
+	vec3d r0 = mp.m_r0;
+	vec3d rt = mp.m_rt;
 
 	vec3d qt, qs;
 
@@ -101,8 +99,8 @@ mat3ds FEWarpSurfaceConstraint::wrpStiffness(FEMaterialPoint& mp)
 	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
 
 	// get the initial and current position
-	vec3d r0 = pt.m_r0;
-	vec3d rt = pt.m_rt;
+	vec3d r0 = mp.m_r0;
+	vec3d rt = mp.m_rt;
 
 	vec3d qt, qs;
 

@@ -29,8 +29,6 @@ FEWarpImageConstraint2::FEWarpImageConstraint2(FEModel* pfem) : FEWarpConstraint
 //-----------------------------------------------------------------------------
 vec3d FEWarpImageConstraint2::wrpForce(FEMaterialPoint& mp)
 {
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-
 	// evaluate template
 	double T = m_tmp(mp);
 
@@ -49,8 +47,6 @@ vec3d FEWarpImageConstraint2::wrpForce(FEMaterialPoint& mp)
 //-----------------------------------------------------------------------------
 mat3ds FEWarpImageConstraint2::wrpStiffness(FEMaterialPoint& mp)
 {
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-
 	// template value
 	double T = m_tmp(mp);
 
