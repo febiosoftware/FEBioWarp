@@ -20,24 +20,28 @@ Results:
 Comments:
 	
 -->
-<febio_spec version="2.0">
+<febio_spec version="3.0">
 	<Module type="solid"/>
 	<Control>
+		<analysis type="static"/>
 		<time_steps>10</time_steps>
 		<step_size>0.1</step_size>
-		<max_refs>15</max_refs>
-		<max_ups>10</max_ups>
-		<dtol>0.001</dtol>
-		<etol>0.01</etol>
-		<rtol>0</rtol>
-		<lstol>0.9</lstol>
 		<time_stepper>
 			<dtmin>0.01</dtmin>
 			<dtmax>0.1</dtmax>
 			<max_retries>5</max_retries>
 			<opt_iter>10</opt_iter>
 		</time_stepper>
-		<analysis type="static"/>
+		<solver>
+			<dtol>0.001</dtol>
+			<etol>0.01</etol>
+			<rtol>0</rtol>
+			<lstol>0.9</lstol>
+			<max_refs>15</max_refs>
+			<qn_method type="BFGS">
+				<max_ups>10</max_ups>
+			</qn_method>
+		</solver>
 	</Control>
 	<Globals>
 		<Constants>
@@ -21572,8 +21576,12 @@ Comments:
 		</NodeSet>
 	</Geometry>
 	<Boundary>
-		<fix bc="xy" set="FixedNodeset01"/>
-		<fix bc="z" set="FixedNodeset02"/>
+		<bc type="fix" node_set="FixedNodeset01">
+			<dofs>x,y</dofs>
+		</bc>
+		<bc type="fix" node_set="FixedNodeset02">
+			<dofs>z</dofs>
+		</bc>
 	</Boundary>
 	<Constraints>
 		<constraint type="warp-image">
@@ -21592,15 +21600,21 @@ Comments:
 		</constraint>
 	</Constraints>
 	<LoadData>
-		<loadcurve id="1" type="linear">
-			<loadpoint>0.0,0</loadpoint>
-			<loadpoint>0.5,10</loadpoint>
-			<loadpoint>1.0,50</loadpoint>
-		</loadcurve>
-		<loadcurve id="2" type="linear">
-			<loadpoint>0.0,10</loadpoint>
-			<loadpoint>1.0, 0</loadpoint>
-		</loadcurve>
+		<load_controller type="loadcurve" id="1">
+			<interpolate>linear</interpolate>
+			<points>
+				<loadpoint>0.0,0</loadpoint>
+				<loadpoint>0.5,10</loadpoint>
+				<loadpoint>1.0,50</loadpoint>
+			</points>
+		</load_controller>
+		<load_controller type="loadcurve" id="2">
+			<interpolate>linear</interpolate>
+			<points>
+				<loadpoint>0.0,10</loadpoint>
+				<loadpoint>1.0, 0</loadpoint>
+			</points>
+		</load_controller>
 	</LoadData>
 	<Output>
 		<plotfile type="febio">
@@ -21612,6 +21626,7 @@ Comments:
 		</plotfile>
 		<logfile>
 			<node_data data="ux">6338</node_data>
+			<element_data data="warp-template;warp-target;warp-energy;warp-force-x;warp-force-y;warp-force-z"/>
 		</logfile>
 	</Output>
 </febio_spec>
