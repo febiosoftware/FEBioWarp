@@ -159,9 +159,6 @@ void FEWarpConstraint::StiffnessMatrix(FELinearSystem& LS, const FETimeInfo& tp)
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
 
-	// element stiffness matrix
-	vector<int> lm;
-
 	// loop over all domains
 	int NDOM = m_dom.size();
 	for (int n=0; n<NDOM; ++n)
@@ -171,6 +168,7 @@ void FEWarpConstraint::StiffnessMatrix(FELinearSystem& LS, const FETimeInfo& tp)
 		{
 			// repeat over all solid elements
 			int NE = dom->Elements();
+#pragma omp parallel for
 			for (int iel=0; iel<NE; ++iel)
 			{
 				FESolidElement& el = dom->Element(iel);
@@ -185,6 +183,7 @@ void FEWarpConstraint::StiffnessMatrix(FELinearSystem& LS, const FETimeInfo& tp)
 				ElementWarpStiffness(*dom, el, ke);
 
 				// get the element's LM vector
+				vector<int> lm;
 				dom->UnpackLM(el, lm);
 
 				// assemble element matrix in global stiffness matrix
