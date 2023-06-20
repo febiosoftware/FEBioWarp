@@ -2,6 +2,7 @@
 #include "FEWarpImageConstraint.h"
 #include <FEBioMech/FEElasticMaterial.h>
 #include <FEImgLib/image_tools.h>
+#include <FECore/log.h>
 
 //-----------------------------------------------------------------------------
 BEGIN_FECORE_CLASS(FEWarpImageConstraint, FEWarpConstraint);
@@ -55,6 +56,8 @@ bool FEWarpImageConstraint::Init()
 	m_blur_cur = m_blur;
 	if (m_blur > 0)
 	{
+		feLog("Blurring images, blur factor %lg\n", m_blur);
+
 #ifdef HAVE_MKL
 		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
 		if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); else fftblur_3d(m_trg, m_trg0, (float)m_blur);
@@ -76,6 +79,8 @@ void FEWarpImageConstraint::Update()
 	if (m_blur !=  m_blur_cur)
 	{
 		m_blur_cur = m_blur;
+
+		feLog("Blurring images, blur factor %lg\n", m_blur);
 
 #ifdef HAVE_MKL
 		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
