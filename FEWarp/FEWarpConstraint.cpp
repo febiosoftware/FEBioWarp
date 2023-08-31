@@ -244,7 +244,7 @@ void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& 
 //-----------------------------------------------------------------------------
 bool FEWarpConstraint::Augment(int naug, const FETimeInfo& tp)
 {
-	if (m_blaugon == false) return true;
+	if ((m_blaugon == false) || (m_altol <= 0.0)) return true;
 
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
