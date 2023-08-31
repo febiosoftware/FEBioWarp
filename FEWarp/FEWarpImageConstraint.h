@@ -8,7 +8,7 @@ class FEWarpImageConstraint : public FEWarpConstraint
 {
 public:
 	FEWarpImageConstraint(FEModel* pfem);
-	~FEWarpImageConstraint() {}
+	~FEWarpImageConstraint();
 
 	// initialization
 	bool Init();
@@ -43,12 +43,22 @@ protected:
 	ImageMap m_tmap;
 	ImageMap m_smap;
 
-	FEImageSource*	m_tmpReader;
-	FEImageSource*	m_trgReader;
-	
 	Image m_tmp0;	//!< original template image data (pre-blurred)
 	Image m_trg0;	//!< original target image data (pre-blurred)
+};
 
+//-----------------------------------------------------------------------------
+class FEWarpSingleImageConstraint : public FEWarpImageConstraint
+{
 public:
+	FEWarpSingleImageConstraint(FEModel* fem);
+
+	// initialization
+	bool Init() override;
+
+private:
+	FEImageSource* m_tmpReader;
+	FEImageSource* m_trgReader;
+
 	DECLARE_FECORE_CLASS();
 };
