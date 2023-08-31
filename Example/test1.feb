@@ -38,9 +38,7 @@ Comments:
 			<rtol>0</rtol>
 			<lstol>0.9</lstol>
 			<max_refs>15</max_refs>
-			<qn_method type="BFGS">
-				<max_ups>10</max_ups>
-			</qn_method>
+			<qnmethod>0</qnmethod>
 		</solver>
 	</Control>
 	<Globals>
@@ -57,7 +55,7 @@ Comments:
 			<v>0</v>
 		</material>
 	</Material>
-	<Geometry>
+	<Mesh>
 		<Nodes>
 			<node id="1"> 0.0000000e+000, 0.0000000e+000, 0.0000000e+000</node>
 			<node id="2"> 0.0000000e+000, 0.0000000e+000, 1.0000000e+000</node>
@@ -8510,7 +8508,7 @@ Comments:
 			<node id="8449"> 6.4000000e+001, 6.4000000e+001, 0.0000000e+000</node>
 			<node id="8450"> 6.4000000e+001, 6.4000000e+001, 1.0000000e+000</node>
 		</Nodes>
-		<Elements type="hex8" mat="1" elset="Part1">
+		<Elements type="hex8" name="Part1">
 			<elem id="1">     1,   131,   133,     3,     2,   132,   134,     4</elem>
 			<elem id="2">     3,   133,   135,     5,     4,   134,   136,     6</elem>
 			<elem id="3">     5,   135,   137,     7,     6,   136,   138,     8</elem>
@@ -21574,7 +21572,10 @@ Comments:
 			<node id="8449"/>
 			<node id="8450"/>
 		</NodeSet>
-	</Geometry>
+	</Mesh>
+	<MeshDomains>
+		<SolidDomain name="Part1" mat="Material1"/>
+	</MeshDomains>
 	<Boundary>
 		<bc type="fix" node_set="FixedNodeset01">
 			<dofs>x,y</dofs>
