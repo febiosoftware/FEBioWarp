@@ -3,6 +3,7 @@
 #include <FEBioMech/FEElasticMaterial.h>
 #include <FEImgLib/image_tools.h>
 #include <FECore/log.h>
+#include <stdexcept>
 
 //-----------------------------------------------------------------------------
 BEGIN_FECORE_CLASS(FEWarpMultiImageConstraint, FEWarpImageConstraint);
@@ -63,7 +64,7 @@ void FEWarpMultiImageConstraint::Update()
 
 		std::string trgName = m_trgReader[m_ntrg]->GetFileName();
 		feLog("Reading target image %s\n", trgName.c_str());
-		if (m_trgReader[m_ntrg]->GetImage3D(m_trg0) == false) throw std::exception("Can't read next target image");
+		if (m_trgReader[m_ntrg]->GetImage3D(m_trg0) == false) throw std::runtime_error("Can't read next target image");
 		m_trg = m_trg0;
 
 		// we need to reset the blur
