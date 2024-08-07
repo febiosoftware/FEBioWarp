@@ -21,9 +21,7 @@ END_FECORE_CLASS();
 FEWarpMultiImageConstraint::FEWarpMultiImageConstraint(FEModel* pfem) : FEWarpImageConstraint(pfem)
 {
 	m_tmpReader = nullptr;
-	m_ntrg = 0;
-	m_tp = 0.0;
-	m_dt = 0.0;
+	m_ntrg = -1;
 }
 
 //-----------------------------------------------------------------------------
@@ -42,9 +40,6 @@ bool FEWarpMultiImageConstraint::Init()
 	feLog("Reading target image %s\n", trgName.c_str());
 	if (m_trgReader[m_ntrg]->GetImage3D(m_trg0) == false) return false;
 
-	m_dt = 1.0 / (double)m_trgReader.size();
-	m_tp = 0.0;
-
 	return FEWarpImageConstraint::Init();
 }
 
@@ -56,23 +51,23 @@ void FEWarpMultiImageConstraint::Update()
 {
 	// see if we need to switch targets
 	double t = GetTimeInfo().currentTime;
-	double Dt = t - m_tp;
-	if (Dt >= m_dt)
+	double dt = 1.0 / (double) m_trgReader.size();
+
+	int n = (int) floor(t / dt);
+	if (n > m_trgReader.size()) n = m_trgReader.size();
+	
+	if (n != m_ntrg)
 	{
 		// switch targets
-		m_ntrg++;
-		if (m_ntrg < m_trgReader.size())
-		{
-			std::string trgName = m_trgReader[m_ntrg]->GetFileName();
-			feLog("Reading target image %s\n", trgName.c_str());
-			if (m_trgReader[m_ntrg]->GetImage3D(m_trg0) == false) throw std::exception("Can't read next target image");
-			m_trg = m_trg0;
+		m_ntrg = n;
 
-			// we need to reset the blur
-			m_blur_cur = 0;
+		std::string trgName = m_trgReader[m_ntrg]->GetFileName();
+		feLog("Reading target image %s\n", trgName.c_str());
+		if (m_trgReader[m_ntrg]->GetImage3D(m_trg0) == false) throw std::exception("Can't read next target image");
+		m_trg = m_trg0;
 
-			m_tp = t;
-		}
+		// we need to reset the blur
+		m_blur_cur = 0;
 	}
 
 	FEWarpImageConstraint::Update();

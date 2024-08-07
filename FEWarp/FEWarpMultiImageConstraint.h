@@ -18,9 +18,7 @@ public:
 protected:
 	FEImageSource* m_tmpReader;
 	std::vector<FEImageSource*> m_trgReader;
-	int	m_ntrg;		//!< current target
-	double	m_dt;	//!< time step for switching target
-	double	m_tp;	//!< last time target was switched
+	int		m_ntrg;		//!< current target
 
 public:
 	DECLARE_FECORE_CLASS();
