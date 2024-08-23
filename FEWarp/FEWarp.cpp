@@ -3,22 +3,12 @@
 
 #include "stdafx.h"
 #include <FECore/FECoreKernel.h>
-#include <FECore/FEModelUpdate.h>
 #include "FEWarpImageConstraint.h"
 #include "FEWarpImageConstraint2.h"
 #include "FEWarpMultiImageConstraint.h"
 #include "FEWarpSurfaceConstraint.h"
 #include "FEWarpPlot.h"
 #include "FEWarpLog.h"
-
-//-----------------------------------------------------------------------------
-void UpdateWarpModel(FECoreBase* pc, FEModelUpdate& fem)
-{
-	if (dynamic_cast<FEWarpImageConstraint*>(pc))
-	{
-		fem.AddPlotVariable("warp-template");
-	}
-}
 
 //-----------------------------------------------------------------------------
 FECORE_EXPORT unsigned int GetSDKVersion()
@@ -51,15 +41,6 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 	REGISTER_FECORE_CLASS(FELogWarpForceX  , "warp-force-x");
 	REGISTER_FECORE_CLASS(FELogWarpForceY  , "warp-force-y");
 	REGISTER_FECORE_CLASS(FELogWarpForceZ  , "warp-force-z");
-
-	// model updates
-	febio.OnCreateEvent(UpdateModelWhenCreating<FEWarpImageConstraint>([](FEModelUpdate& fem) {
-		fem.AddPlotVariable("warp-template");
-		fem.AddPlotVariable("warp-target");
-		fem.AddPlotVariable("warp-energy");
-		fem.AddPlotVariable("warp-force");
-		})
-	);
 }
 
 //-----------------------------------------------------------------------------
