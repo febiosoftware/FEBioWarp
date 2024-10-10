@@ -55,7 +55,7 @@ void FEWarpMultiImageConstraint::Update()
 	double dt = 1.0 / (double) m_trgReader.size();
 
 	int n = (int) floor(t / dt) - 1;
-	if (n > m_trgReader.size()) n = m_trgReader.size() - 1;
+	if (n > m_trgReader.size() - 1) n = m_trgReader.size() - 1;
 	
 	if (n != m_ntrg)
 	{
