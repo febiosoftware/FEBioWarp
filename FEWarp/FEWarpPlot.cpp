@@ -141,3 +141,30 @@ bool FEPlotForce::Save(FEMesh &m, FEDataStream& s)
 	}
 	return true;
 }
+
+bool FEPlotDiff::Save(FEMesh& m, FEDataStream& s)
+{
+	// find the warping constraint
+	FEModel& fem = *GetFEModel();
+	FEWarpImageConstraint* pc = 0;
+	for (int i = 0; i < fem.NonlinearConstraints(); ++i)
+	{
+		pc = dynamic_cast<FEWarpImageConstraint*>(fem.NonlinearConstraint(i));
+		if (pc) break;
+	}
+	if (pc == 0) return false;
+
+	// get the image map
+	ImageMap& tmap = pc->GetTemplateMap();
+	ImageMap& smap = pc->GetTargetMap();
+
+	int N = m.Nodes();
+	for (int i = 0; i < N; ++i)
+	{
+		double T = tmap.value(m.Node(i).m_r0);
+		double S = smap.value(m.Node(i).m_rt);
+
+		s << S - T;
+	}
+	return true;
+}

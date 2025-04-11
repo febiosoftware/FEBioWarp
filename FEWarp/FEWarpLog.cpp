@@ -100,3 +100,22 @@ double FELogWarpForceZ::value(FEElement& el)
 	vec3d fw = force(el);
 	return fw.z;
 }
+
+double FELogWarpDiff::value(FEElement& el)
+{
+	if (m_wrp == nullptr) return 0.0;
+	FEMesh& mesh = GetFEModel()->GetMesh();
+	ImageMap& tmap = m_wrp->GetTemplateMap();
+	ImageMap& smap = m_wrp->GetTargetMap();
+	double e = 0.0;
+	for (int i = 0; i < el.Nodes(); ++i)
+	{
+		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
+		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
+		double T = tmap.value(r0);
+		double S = smap.value(rt);
+		e += S - T;
+	}
+	e /= (double)el.Nodes();
+	return e;
+}

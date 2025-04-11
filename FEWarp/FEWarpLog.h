@@ -60,3 +60,10 @@ public:
 	FELogWarpForceZ(FEModel* fem) : FELogWarpForce_(fem) {}
 	double value(FEElement& el) override;
 };
+
+class FELogWarpDiff : public FELogWarp
+{
+public:
+	FELogWarpDiff(FEModel* fem) : FELogWarp(fem) {}
+	double value(FEElement& el) override;
+};

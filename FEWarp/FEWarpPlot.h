@@ -39,3 +39,10 @@ public:
 	FEPlotForce(FEModel* pfem) : FEPlotNodeData(pfem, PLT_VEC3F, FMT_NODE) {}
 	virtual bool Save(FEMesh& m, FEDataStream& s);
 };
+
+class FEPlotDiff : public FEPlotNodeData
+{
+public:
+	FEPlotDiff(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};

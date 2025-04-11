@@ -34,13 +34,15 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 	REGISTER_FECORE_CLASS(FEPlotTarget  , "warp-target"  );
 	REGISTER_FECORE_CLASS(FEPlotEnergy  , "warp-energy"  );
 	REGISTER_FECORE_CLASS(FEPlotForce   , "warp-force"   );
+	REGISTER_FECORE_CLASS(FEPlotDiff    , "warp-diff"    );
 
 	REGISTER_FECORE_CLASS(FELogWarpTemplate, "warp-template");
-	REGISTER_FECORE_CLASS(FELogWarpTarget  , "warp-target");
-	REGISTER_FECORE_CLASS(FELogWarpEnergy  , "warp-energy");
-	REGISTER_FECORE_CLASS(FELogWarpForceX  , "warp-force-x");
-	REGISTER_FECORE_CLASS(FELogWarpForceY  , "warp-force-y");
-	REGISTER_FECORE_CLASS(FELogWarpForceZ  , "warp-force-z");
+	REGISTER_FECORE_CLASS(FELogWarpTarget  , "warp-target"  );
+	REGISTER_FECORE_CLASS(FELogWarpEnergy  , "warp-energy"  );
+	REGISTER_FECORE_CLASS(FELogWarpForceX  , "warp-force-x" );
+	REGISTER_FECORE_CLASS(FELogWarpForceY  , "warp-force-y" );
+	REGISTER_FECORE_CLASS(FELogWarpForceZ  , "warp-force-z" );
+	REGISTER_FECORE_CLASS(FELogWarpDiff    , "warp-diff"    );
 }
 
 //-----------------------------------------------------------------------------
