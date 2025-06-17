@@ -397,3 +397,6 @@ cmbuild/
 Documentation/Doxygen/doc
 VS2019/
 vs22/
+
+.vscode
+cbuild
