@@ -17,6 +17,6 @@ jobs:
       aws-sg-id: sg-0ca7912782cf1538b
       aws-instance-type: c5a.8xlarge
       runTests: false
-      package-name: febiochem
+      package-name: febiowarp
       requires-sdk: true
     secrets: inherit

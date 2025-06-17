@@ -16,6 +16,6 @@ jobs:
       aws-ami-id: ami-05f23270883f04ec8
       aws-sg-id: sg-0ca7912782cf1538b
       runTests: false
-      package-name: febiochem
+      package-name: febiowarp
       requires-sdk: true
     secrets: inherit

@@ -13,6 +13,6 @@ jobs:
   call_workflow:
     uses: febiosoftware/febio-workflows/.github/workflows/macos-reusable-push.yml@develop
     with:
-      package-name: febiochem
+      package-name: febiowarp
       requires-sdk: true
     secrets: inherit
