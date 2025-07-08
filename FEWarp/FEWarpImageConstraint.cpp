@@ -3,6 +3,7 @@
 #include <FEBioMech/FEElasticMaterial.h>
 #include <FEImgLib/image_tools.h>
 #include <FECore/log.h>
+#include <FECore/FEModel.h>
 
 //-----------------------------------------------------------------------------
 FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(pfem), m_tmap(m_tmp), m_smap(m_trg)
@@ -35,6 +36,10 @@ bool FEWarpImageConstraint::Init()
 	m_tmp = m_tmp0;
 	m_trg = m_trg0;
 
+	// SL: Added load curve update. Check with Steve for how to do just the single parameter so we don't overwrite anything.
+	// update load curve
+	FEModel* fem = GetFEModel();
+	fem->EvaluateLoadParameters();
 	m_blur_cur = m_blur;
 	if (m_blur > 0)
 	{

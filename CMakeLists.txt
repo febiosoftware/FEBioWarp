@@ -22,6 +22,10 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
+##### Search for library and include directories #####
+
+option(USE_MKL "Required for pardiso and iterative solvers" ON)
+
 # Find FEBio SDK or git repo automatically
 if(WIN32)
 	set(TEMP_PATHS ${CMAKE_SOURCE_DIR}/.. ${CMAKE_SOURCE_DIR}/../.. $ENV{HOMEPATH}/ $ENV{HOMEPATH}/source/repos $ENV{HOMEPATH}/*)
@@ -169,3 +173,6 @@ set_property(TARGET FEBioWarp PROPERTY AUTOGEN_BUILD_DIR ${CMAKE_BINARY_DIR}/CMa
 
 target_link_libraries(FEBioWarp ${FECORE} ${FEBIOMECH} ${FEIMGLIB})
 
+if(USE_MKL)
+    target_compile_definitions(FEBioWarp PRIVATE HAVE_MKL)
+endif()
