@@ -41,18 +41,6 @@ bool FEWarpImageConstraint::Init()
 	FEModel* fem = GetFEModel();
 	fem->EvaluateLoadParameters();
 	m_blur_cur = m_blur;
-	if (m_blur > 0)
-	{
-		feLog("Blurring images, blur factor %lg\n", m_blur);
-
-#ifdef HAVE_MKL
-		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
-		if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); else fftblur_3d(m_trg, m_trg0, (float)m_blur);
-#else
-		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float) m_blur); else blur_image(m_tmp, m_tmp0, (float) m_blur);
-		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float) m_blur); else blur_image(m_trg, m_trg0, (float) m_blur);
-#endif
-	}
 
 	return true;
 }
@@ -68,10 +56,18 @@ void FEWarpImageConstraint::Update()
 		m_blur_cur = m_blur;
 
 		feLog("Blurring images, blur factor %lg\n", m_blur);
-
 #ifdef HAVE_MKL
-		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
-		if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); else fftblur_3d(m_trg, m_trg0, (float)m_blur);
+		if (m_mkl) {
+			if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); 
+			else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
+			if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); 
+			else fftblur_3d(m_trg, m_trg0, (float)m_blur);
+		}
+		else
+		{
+			if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float)m_blur); else blur_image(m_tmp, m_tmp0, (float)m_blur);
+			if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float)m_blur); else blur_image(m_trg, m_trg0, (float)m_blur);
+		}
 #else
 		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float) m_blur); else blur_image(m_tmp, m_tmp0, (float) m_blur);
 		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float) m_blur); else blur_image(m_trg, m_trg0, (float) m_blur);
@@ -122,6 +118,7 @@ BEGIN_FECORE_CLASS(FEWarpSingleImageConstraint, FEWarpConstraint);
 	ADD_PARAMETER(m_blaugon, "laugon"  );
 	ADD_PARAMETER(m_altol  , "altol"   );
 	ADD_PARAMETER(m_blur   , "blur"    );
+	ADD_PARAMETER(m_mkl, "mkl_blur");
 	ADD_PARAMETER(m_r0    , 3, "range_min");
 	ADD_PARAMETER(m_r1    , 3, "range_max");
 

@@ -34,6 +34,7 @@ protected:
 	double	m_r0[3];	//!< minimum range
 	double	m_r1[3];	//!< maximum range
 	double	m_blur;		//!< blur factor
+	bool	m_mkl;
 	
 	double		m_blur_cur;	//!< current blur factor
 
