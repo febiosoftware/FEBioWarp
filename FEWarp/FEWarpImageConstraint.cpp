@@ -2,13 +2,15 @@
 #include "FEWarpImageConstraint.h"
 #include <FEBioMech/FEElasticMaterial.h>
 #include <FEImgLib/image_tools.h>
+#include <FEImgLib/ImageFilter.h>
+#include <FEImgLib/Image.h>
 #include <FECore/log.h>
 #include <FECore/FEModel.h>
 
 //-----------------------------------------------------------------------------
 FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(pfem), m_tmap(m_tmp), m_smap(m_trg)
 {
-	m_blur = 0.0;
+	//m_blur = 0.0;
 	m_blur_cur = 0.0;
 
 	m_r0[0] = m_r0[1] = m_r0[2] = 0.0;
@@ -40,7 +42,13 @@ bool FEWarpImageConstraint::Init()
 	// update load curve
 	FEModel* fem = GetFEModel();
 	fem->EvaluateLoadParameters();
-	m_blur_cur = m_blur;
+	
+	// Initialize filters
+	if (m_filt.size() < 1) { feLog("No filters provided.\n"); }
+	for (auto iter = m_filt.begin(); iter != m_filt.end(); ++iter)
+	{
+		if ((*iter)->Init() == false) return false;
+	}
 
 	return true;
 }
@@ -51,27 +59,9 @@ bool FEWarpImageConstraint::Init()
 //       In future versions of FEBio this will no longer be the case.
 void FEWarpImageConstraint::Update()
 {
-	if (m_blur !=  m_blur_cur)
+	for (auto iter = m_filt.begin(); iter != m_filt.end(); ++iter)
 	{
-		m_blur_cur = m_blur;
-
-		feLog("Blurring images, blur factor %lg\n", m_blur);
-#ifdef HAVE_MKL
-		if (m_mkl) {
-			if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); 
-			else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
-			if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); 
-			else fftblur_3d(m_trg, m_trg0, (float)m_blur);
-		}
-		else
-		{
-			if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float)m_blur); else blur_image(m_tmp, m_tmp0, (float)m_blur);
-			if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float)m_blur); else blur_image(m_trg, m_trg0, (float)m_blur);
-		}
-#else
-		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float) m_blur); else blur_image(m_tmp, m_tmp0, (float) m_blur);
-		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float) m_blur); else blur_image(m_trg, m_trg0, (float) m_blur);
-#endif
+		(*iter)->Update(m_trg, m_trg0);
 	}
 }
 
@@ -117,13 +107,12 @@ BEGIN_FECORE_CLASS(FEWarpSingleImageConstraint, FEWarpConstraint);
 	ADD_PARAMETER(m_k      , "penalty" );
 	ADD_PARAMETER(m_blaugon, "laugon"  );
 	ADD_PARAMETER(m_altol  , "altol"   );
-	ADD_PARAMETER(m_blur   , "blur"    );
-	ADD_PARAMETER(m_mkl, "mkl_blur");
 	ADD_PARAMETER(m_r0    , 3, "range_min");
 	ADD_PARAMETER(m_r1    , 3, "range_max");
 
 	ADD_PROPERTY(m_tmpReader, "template")->SetDefaultType("raw");
 	ADD_PROPERTY(m_trgReader, "target"  )->SetDefaultType("raw");
+	ADD_PROPERTY(m_filt, "filter");
 END_FECORE_CLASS();
 
 FEWarpSingleImageConstraint::FEWarpSingleImageConstraint(FEModel* fem) : FEWarpImageConstraint(fem)

@@ -2,6 +2,7 @@
 #include "FEWarpConstraint.h"
 #include <FEImgLib/FEImageSource.h>
 #include <FEImgLib/ImageMap.h>
+#include <FEImgLib/ImageFilter.h>
 
 //-----------------------------------------------------------------------------
 class FEWarpImageConstraint : public FEWarpConstraint
@@ -33,8 +34,8 @@ public:
 protected:
 	double	m_r0[3];	//!< minimum range
 	double	m_r1[3];	//!< maximum range
-	double	m_blur;		//!< blur factor
-	bool	m_mkl;
+	//double	m_blur;		//!< blur factor
+	//bool	m_mkl;
 	
 	double		m_blur_cur;	//!< current blur factor
 
@@ -46,6 +47,8 @@ protected:
 
 	Image m_tmp0;	//!< original template image data (pre-blurred)
 	Image m_trg0;	//!< original target image data (pre-blurred)
+
+	std::vector<ImageFilter*> m_filt;
 };
 
 //-----------------------------------------------------------------------------
@@ -61,5 +64,7 @@ private:
 	FEImageSource* m_tmpReader;
 	FEImageSource* m_trgReader;
 
+	//std::vector<ImageFilter*> m_filt;
+	
 	DECLARE_FECORE_CLASS();
 };

@@ -10,7 +10,6 @@ BEGIN_FECORE_CLASS(FEWarpMultiImageConstraint, FEWarpImageConstraint);
 	ADD_PARAMETER(m_k      , "penalty" );
 	ADD_PARAMETER(m_blaugon, "laugon"  );
 	ADD_PARAMETER(m_altol  , "altol"   );
-	ADD_PARAMETER(m_blur   , "blur"    );
 	ADD_PARAMETER(m_r0    , 3, "range_min");
 	ADD_PARAMETER(m_r1    , 3, "range_max");
 
