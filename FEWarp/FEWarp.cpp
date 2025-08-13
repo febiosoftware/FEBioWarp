@@ -9,6 +9,7 @@
 #include "FEWarpSurfaceConstraint.h"
 #include "FEWarpPlot.h"
 #include "FEWarpLog.h"
+#include "FEWarpTask.h"
 
 //-----------------------------------------------------------------------------
 FECORE_EXPORT unsigned int GetSDKVersion()
@@ -43,6 +44,8 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 	REGISTER_FECORE_CLASS(FELogWarpForceY  , "warp-force-y" );
 	REGISTER_FECORE_CLASS(FELogWarpForceZ  , "warp-force-z" );
 	REGISTER_FECORE_CLASS(FELogWarpDiff    , "warp-diff"    );
+
+	REGISTER_FECORE_CLASS(FEWarpTask, "fewarp");
 }
 
 //-----------------------------------------------------------------------------
