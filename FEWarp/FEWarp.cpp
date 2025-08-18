@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "version.h"
 #include <FECore/FECoreKernel.h>
 #include "FEWarpImageConstraint.h"
 #include "FEWarpImageConstraint2.h"
@@ -48,9 +49,9 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 //-----------------------------------------------------------------------------
 FECORE_EXPORT void GetPluginVersion(int& maj, int& min, int& patch)
 {
-	maj = 2;
-	min = 0;
-	patch = 0;
+	maj = VERSION;
+	min = SUBVERSION;
+	patch = SUBSUBVERSION;
 }
 
 //-----------------------------------------------------------------------------
