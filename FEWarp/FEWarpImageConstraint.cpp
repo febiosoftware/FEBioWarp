@@ -9,6 +9,7 @@ FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(p
 {
 	m_blur = 0.0;
 	m_blur_cur = 0.0;
+	m_blur_method = 0; // default average blur
 
 	m_r0[0] = m_r0[1] = m_r0[2] = 0.0;
 	m_r1[0] = m_r1[1] = m_r1[2] = 1.0;
@@ -35,18 +36,15 @@ bool FEWarpImageConstraint::Init()
 	m_tmp = m_tmp0;
 	m_trg = m_trg0;
 
+	BlurMethod blurMethod = (BlurMethod)m_blur_method;
+
 	m_blur_cur = m_blur;
 	if (m_blur > 0)
 	{
 		feLog("Blurring images, blur factor %lg\n", m_blur);
 
-#ifdef HAVE_MKL
-		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
-		if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); else fftblur_3d(m_trg, m_trg0, (float)m_blur);
-#else
-		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float) m_blur); else blur_image(m_tmp, m_tmp0, (float) m_blur);
-		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float) m_blur); else blur_image(m_trg, m_trg0, (float) m_blur);
-#endif
+		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float)m_blur, blurMethod); else blur_image_3d(m_tmp, m_tmp0, (float)m_blur, blurMethod);
+		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float)m_blur, blurMethod); else blur_image_3d(m_trg, m_trg0, (float)m_blur, blurMethod);
 	}
 
 	return true;
@@ -64,13 +62,10 @@ void FEWarpImageConstraint::Update()
 
 		feLog("Blurring images, blur factor %lg\n", m_blur);
 
-#ifdef HAVE_MKL
-		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
-		if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); else fftblur_3d(m_trg, m_trg0, (float)m_blur);
-#else
-		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float) m_blur); else blur_image(m_tmp, m_tmp0, (float) m_blur);
-		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float) m_blur); else blur_image(m_trg, m_trg0, (float) m_blur);
-#endif
+		BlurMethod blurMethod = (BlurMethod)m_blur_method;
+
+		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float)m_blur, blurMethod); else blur_image_3d(m_tmp, m_tmp0, (float)m_blur, blurMethod);
+		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float)m_blur, blurMethod); else blur_image_3d(m_trg, m_trg0, (float)m_blur, blurMethod);
 	}
 }
 
@@ -117,6 +112,7 @@ BEGIN_FECORE_CLASS(FEWarpSingleImageConstraint, FEWarpConstraint);
 	ADD_PARAMETER(m_blaugon, "laugon"  );
 	ADD_PARAMETER(m_altol  , "altol"   );
 	ADD_PARAMETER(m_blur   , "blur"    );
+	ADD_PARAMETER(m_blur_method   , "blur_method"    )->setEnums("AVERAGE\0FFT\0");
 	ADD_PARAMETER(m_r0    , 3, "range_min");
 	ADD_PARAMETER(m_r1    , 3, "range_max");
 

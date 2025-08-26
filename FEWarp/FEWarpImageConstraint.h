@@ -36,6 +36,7 @@ protected:
 	double	m_blur;		//!< blur factor
 	
 	double		m_blur_cur;	//!< current blur factor
+	int 		m_blur_method;
 
 	Image	m_tmp;	//!< template image
 	Image	m_trg;	//!< target image

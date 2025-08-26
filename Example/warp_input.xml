@@ -10,6 +10,7 @@
 		<range_min>0,0,0</range_min>
 		<range_max>64,64,0</range_max>
 		<penalty>50</penalty>
+		<blur_method>1</blur_method>
 		<blur>10</blur>
 		<laugon>1</laugon>
 		<altol>0.1</altol>
