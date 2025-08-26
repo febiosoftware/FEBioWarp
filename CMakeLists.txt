@@ -133,6 +133,7 @@ if(FEBio_LIB_DIR)
     findLib(FECore FEBio_LIB_DIR FECORE)
     findLib(FEBioMech FEBio_LIB_DIR FEBIOMECH)
     findLib(FEImgLib FEBio_LIB_DIR FEIMGLIB)
+    findLib(FEBioXML FEBio_LIB_DIR FEBIOXML)
     findLib(XML FEBio_LIB_DIR XMLLIB)
 endif()
 
@@ -168,5 +169,5 @@ set_property(TARGET FEBioWarp PROPERTY AUTOGEN_BUILD_DIR ${CMAKE_BINARY_DIR}/CMa
 
 ##### Link Libraries #####
 
-target_link_libraries(FEBioWarp ${FECORE} ${FEBIOMECH} ${FEIMGLIB} ${XMLLIB})
+target_link_libraries(FEBioWarp ${FECORE} ${FEBIOMECH} ${FEIMGLIB} ${FEBIOXML} ${XMLLIB})
 
