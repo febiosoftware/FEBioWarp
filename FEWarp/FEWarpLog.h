@@ -67,3 +67,10 @@ public:
 	FELogWarpDiff(FEModel* fem) : FELogWarp(fem) {}
 	double value(FEElement& el) override;
 };
+
+//class FELogWarpDiffRaw : public FELogWarp
+//{
+//public:
+//	FELogWarpDiffRaw(FEModel* fem) : FELogWarp(fem) {}
+//	double value(FEElement& el) override;
+//};

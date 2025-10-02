@@ -67,7 +67,7 @@ void FEWarpMultiImageConstraint::Update()
 		m_trg = m_trg0;
 
 		// we need to reset the blur
-		m_blur_cur = 0;
+		//m_blur_cur = 0;
 	}
 
 	FEWarpImageConstraint::Update();

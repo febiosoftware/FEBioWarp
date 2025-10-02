@@ -6,12 +6,14 @@
 #include <FEImgLib/Image.h>
 #include <FECore/log.h>
 #include <FECore/FEModel.h>
+#include <chrono>
+#include <iostream>
+#include <map>
 
 //-----------------------------------------------------------------------------
 FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(pfem), m_tmap(m_tmp), m_smap(m_trg)
 {
-	//m_blur = 0.0;
-	m_blur_cur = 0.0;
+	m_pt = 0.0;
 
 	m_r0[0] = m_r0[1] = m_r0[2] = 0.0;
 	m_r1[0] = m_r1[1] = m_r1[2] = 1.0;
@@ -38,17 +40,20 @@ bool FEWarpImageConstraint::Init()
 	m_tmp = m_tmp0;
 	m_trg = m_trg0;
 
+	m_pt = 0.0;
+	m_pr = 0.0;
+
 	// SL: Added load curve update. Check with Steve for how to do just the single parameter so we don't overwrite anything.
 	// update load curve
 	FEModel* fem = GetFEModel();
 	fem->EvaluateLoadParameters();
 	
 	// Initialize filters
-	if (m_filt.size() < 1) { feLog("No filters provided.\n"); }
-	for (auto iter = m_filt.begin(); iter != m_filt.end(); ++iter)
-	{
-		if ((*iter)->Init() == false) return false;
-	}
+	if (m_filt->Init() == false) return false;
+
+	// blur images
+	std::cout << "lets blur this baby" << std::endl;
+	Update();
 
 	return true;
 }
@@ -57,11 +62,37 @@ bool FEWarpImageConstraint::Init()
 // This is called at the beginning of each time step
 // NOTE: This is currently called at the end of each iteration as well.
 //       In future versions of FEBio this will no longer be the case.
+//		 SL: Added check against current time and previous blur to skip blur if 
+//		 the time or blur haven't changed
 void FEWarpImageConstraint::Update()
 {
-	for (auto iter = m_filt.begin(); iter != m_filt.end(); ++iter)
+	using Clock = std::chrono::steady_clock;
+	using Second = std::chrono::duration<double, std::ratio<1> >;
+	std::chrono::time_point<Clock> m_beg;
+	double elapsed;
+	double ct = this->CurrentTime();
+	std::cout << "current time is " << ct << std::endl;
+	bool test1 = ct <= m_pt;
+	bool test2 = ct == 0.0;
+	bool test3 = m_filt->GetBlur() != m_pr;
+	std::cout << "bools are " << test1 << ", " << test2 << ", " << test3 << std::endl;
+	if ((ct <= m_pt) || (ct == 0.0)) { return; }
+	m_pt = ct;
+	
+	if (m_filt->GetBlur() != m_pr)
 	{
-		(*iter)->Update(m_trg, m_trg0);
+		//update i_pblur
+		m_pr = m_filt->GetBlur();
+		// template image
+		m_beg = Clock::now();
+		m_filt->Update(m_tmp, m_tmp0);
+		elapsed = std::chrono::duration_cast<Second>(Clock::now() - m_beg).count();
+		std::cout << "template image: took " << elapsed << " seconds" << std::endl;
+		// target image
+		m_beg = Clock::now();
+		m_filt->Update(m_trg, m_trg0);
+		elapsed = std::chrono::duration_cast<Second>(Clock::now() - m_beg).count();
+		std::cout << "target image: took " << elapsed << " seconds" << std::endl;
 	}
 }
 
