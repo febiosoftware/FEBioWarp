@@ -24,6 +24,7 @@ endif()
 
 # Find FEBio SDK or git repo automatically
 if(WIN32)
+    add_definitions(-DWIN32 -DFECORE_DLL)
 	set(TEMP_PATHS ${CMAKE_SOURCE_DIR}/.. ${CMAKE_SOURCE_DIR}/../.. $ENV{HOMEPATH}/ $ENV{HOMEPATH}/source/repos $ENV{HOMEPATH}/*)
 else()
     set(TEMP_PATHS ${CMAKE_SOURCE_DIR}/.. ${CMAKE_SOURCE_DIR}/../.. $ENV{HOME}/ $ENV{HOME}/*)

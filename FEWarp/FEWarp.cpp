@@ -4,8 +4,9 @@
 #include "stdafx.h"
 #include "version.h"
 #include <FECore/FECoreKernel.h>
+#include "FEWarpVolumeConstraint.h"
 #include "FEWarpImageConstraint.h"
-#include "FEWarpImageConstraint2.h"
+#include "FEWarpFilteredImageConstraint.h"
 #include "FEWarpMultiImageConstraint.h"
 #include "FEWarpSurfaceConstraint.h"
 #include "FEWarpPlot.h"
@@ -28,7 +29,7 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 
 	// constraints
 	REGISTER_FECORE_CLASS(FEWarpSingleImageConstraint, "warp-image");
-//	REGISTER_FECORE_CLASS(FEWarpImageConstraint2  , "warp-image2");
+	REGISTER_FECORE_CLASS(FEWarpSingleFilteredImageConstraint, "warp-filtered-image");
 	REGISTER_FECORE_CLASS(FEWarpMultiImageConstraint, "warp-multi-image");
 	REGISTER_FECORE_CLASS(FEWarpSurfaceConstraint, "warp-mesh" );
 

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FEWarpLog.h"
-#include "FEWarpImageConstraint.h"
+#include "FEWarpVolumeConstraint.h"
 #include <FECore/FEModel.h>
 
 FELogWarp::FELogWarp(FEModel* fem) : FELogElemData(fem) 
@@ -9,7 +9,7 @@ FELogWarp::FELogWarp(FEModel* fem) : FELogElemData(fem)
 	m_wrp = nullptr;
 	for (int i = 0; i < fem->NonlinearConstraints(); ++i)
 	{
-		m_wrp = dynamic_cast<FEWarpImageConstraint*>(fem->NonlinearConstraint(i));
+		m_wrp = dynamic_cast<FEWarpVolumeConstraint*>(fem->NonlinearConstraint(i));
 		if (m_wrp) break;
 	}
 }

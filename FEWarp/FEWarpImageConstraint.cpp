@@ -5,7 +5,7 @@
 #include <FECore/log.h>
 
 //-----------------------------------------------------------------------------
-FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(pfem), m_tmap(m_tmp), m_smap(m_trg)
+FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpVolumeConstraint(pfem)
 {
 	m_blur = 0.0;
 	m_blur_cur = 0.0;
@@ -67,43 +67,6 @@ void FEWarpImageConstraint::Update()
 		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float)m_blur, blurMethod); else blur_image_3d(m_tmp, m_tmp0, (float)m_blur, blurMethod);
 		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float)m_blur, blurMethod); else blur_image_3d(m_trg, m_trg0, (float)m_blur, blurMethod);
 	}
-}
-
-//-----------------------------------------------------------------------------
-vec3d FEWarpImageConstraint::wrpForce(FEMaterialPoint& mp)
-{
-	// evaluate template
-	double T = m_tmap.value(mp.m_r0);
-
-	// evaluate target
-	double S = m_smap.value(mp.m_rt);
-
-	// evaluate target gradient
-	vec3d G = m_smap.gradient(mp.m_rt);
-
-	// evaluate force
-	vec3d Fw = G*((S - T)*m_k);
-
-	return Fw;
-}
-
-//-----------------------------------------------------------------------------
-mat3ds FEWarpImageConstraint::wrpStiffness(FEMaterialPoint& mp)
-{
-	// template value
-	double T = m_tmap.value(mp.m_r0);
-
-	// target value
-	double S = m_smap.value(mp.m_rt);
-
-	// calculate target gradient
-	vec3d dS = m_smap.gradient(mp.m_rt);
-
-	// calculate target hessian
-	mat3ds H = m_smap.hessian(mp.m_rt);
-
-	// warping stiffness
-	return H*((T - S)*m_k) - dyad(dS)*m_k;
 }
 
 //=====================================================================

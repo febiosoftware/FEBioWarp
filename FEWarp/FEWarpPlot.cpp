@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FEWarpPlot.h"
 #include "FEWarpConstraint.h"
-#include "FEWarpImageConstraint.h"
+#include "FEWarpVolumeConstraint.h"
 #include <FECore/FEModel.h>
 #include <FECore/FEDataStream.h>
 #include <FECore/FEAnalysis.h>
@@ -13,7 +13,7 @@ bool FEPlotTemplate::Save(FEMesh &m, FEDataStream& s)
 	{
 		FENLConstraint* pc = fem.NonlinearConstraint(i);
 
-		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(pc);
+		FEWarpVolumeConstraint* pci = dynamic_cast<FEWarpVolumeConstraint*>(pc);
 		if (pci && pci->IsActive()) { return SaveWarpImage(m, pci, s); }
 
 		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(pc);
@@ -22,7 +22,7 @@ bool FEPlotTemplate::Save(FEMesh &m, FEDataStream& s)
 	return true;
 }
 
-bool FEPlotTemplate::SaveWarpImage(FEMesh& m, FEWarpImageConstraint* pc, FEDataStream& s)
+bool FEPlotTemplate::SaveWarpImage(FEMesh& m, FEWarpVolumeConstraint* pc, FEDataStream& s)
 {
 	// get the template image map
 	ImageMap& tmap = pc->GetTemplateMap();
@@ -51,7 +51,7 @@ bool FEPlotTarget::Save(FEMesh &m, FEDataStream& s)
 	{
 		FENLConstraint* pc = fem.NonlinearConstraint(i);
 
-		FEWarpImageConstraint* pci = dynamic_cast<FEWarpImageConstraint*>(pc);
+		FEWarpVolumeConstraint* pci = dynamic_cast<FEWarpVolumeConstraint*>(pc);
 		if (pci && pci->IsActive()) { return SaveWarpImage(m, pci, s); }
 
 		FEWarpSurfaceConstraint* pcs = dynamic_cast<FEWarpSurfaceConstraint*>(pc);
@@ -61,7 +61,7 @@ bool FEPlotTarget::Save(FEMesh &m, FEDataStream& s)
 }
 
 
-bool FEPlotTarget::SaveWarpImage(FEMesh& m, FEWarpImageConstraint* pc, FEDataStream& s)
+bool FEPlotTarget::SaveWarpImage(FEMesh& m, FEWarpVolumeConstraint* pc, FEDataStream& s)
 {
 	// get the target image map
 	ImageMap& smap = pc->GetTargetMap();
@@ -87,10 +87,10 @@ bool FEPlotEnergy::Save(FEMesh &m, FEDataStream& s)
 {
 	// find the warping constraint
 	FEModel& fem = *GetFEModel();
-	FEWarpImageConstraint* pc = 0;
+	FEWarpVolumeConstraint* pc = 0;
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
-		pc = dynamic_cast<FEWarpImageConstraint*>(fem.NonlinearConstraint(i));
+		pc = dynamic_cast<FEWarpVolumeConstraint*>(fem.NonlinearConstraint(i));
 		if (pc) break;
 	}
 	if (pc == 0) return false;
@@ -114,10 +114,10 @@ bool FEPlotForce::Save(FEMesh &m, FEDataStream& s)
 {
 	// find the warping constraint
 	FEModel& fem = *GetFEModel();
-	FEWarpImageConstraint* pc = 0;
+	FEWarpVolumeConstraint* pc = 0;
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
-		pc = dynamic_cast<FEWarpImageConstraint*>(fem.NonlinearConstraint(i));
+		pc = dynamic_cast<FEWarpVolumeConstraint*>(fem.NonlinearConstraint(i));
 		if (pc) break;
 	}
 	if (pc == 0) return false;
@@ -146,10 +146,10 @@ bool FEPlotDiff::Save(FEMesh& m, FEDataStream& s)
 {
 	// find the warping constraint
 	FEModel& fem = *GetFEModel();
-	FEWarpImageConstraint* pc = 0;
+	FEWarpVolumeConstraint* pc = 0;
 	for (int i = 0; i < fem.NonlinearConstraints(); ++i)
 	{
-		pc = dynamic_cast<FEWarpImageConstraint*>(fem.NonlinearConstraint(i));
+		pc = dynamic_cast<FEWarpVolumeConstraint*>(fem.NonlinearConstraint(i));
 		if (pc) break;
 	}
 	if (pc == 0) return false;
