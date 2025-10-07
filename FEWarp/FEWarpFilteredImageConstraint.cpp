@@ -15,8 +15,11 @@ FEWarpFilteredImageConstraint::FEWarpFilteredImageConstraint(FEModel* pfem) : FE
 {
 	m_pt = 0.0;
 
-	m_r0[0] = m_r0[1] = m_r0[2] = 0.0;
-	m_r1[0] = m_r1[1] = m_r1[2] = 1.0;
+	m_tr0[0] = m_tr0[1] = m_tr0[2] = 0.0;
+	m_tr1[0] = m_tr1[1] = m_tr1[2] = 1.0;
+	m_sr0[0] = m_sr0[1] = m_sr0[2] = 0.0;
+	m_sr1[0] = m_sr1[1] = m_sr1[2] = 1.0;
+
 }
 
 //-----------------------------------------------------------------------------
@@ -31,11 +34,13 @@ bool FEWarpFilteredImageConstraint::Init()
 	int ny = m_tmp0.height();
 	int nz = m_tmp0.depth ();
 
-	vec3d r0(m_r0[0], m_r0[1], m_r0[2]);
-	vec3d r1(m_r1[0], m_r1[1], m_r1[2]);
+	vec3d tr0(m_tr0[0], m_tr0[1], m_tr0[2]);
+	vec3d tr1(m_tr1[0], m_tr1[1], m_tr1[2]);
+	vec3d sr0(m_sr0[0], m_sr0[1], m_sr0[2]);
+	vec3d sr1(m_sr1[0], m_sr1[1], m_sr1[2]);
 
-	m_tmap.SetRange(r0, r1);
-	m_smap.SetRange(r0, r1);
+	m_tmap.SetRange(tr0, tr1);
+	m_smap.SetRange(sr0, sr1);
 
 	m_tmp = m_tmp0;
 	m_trg = m_trg0;
@@ -100,8 +105,10 @@ BEGIN_FECORE_CLASS(FEWarpSingleFilteredImageConstraint, FEWarpVolumeConstraint);
 	ADD_PARAMETER(m_k      , "penalty" );
 	ADD_PARAMETER(m_blaugon, "laugon"  );
 	ADD_PARAMETER(m_altol  , "altol"   );
-	ADD_PARAMETER(m_r0    , 3, "range_min");
-	ADD_PARAMETER(m_r1    , 3, "range_max");
+	ADD_PARAMETER(m_tr0    , 3, "template_range_min");
+	ADD_PARAMETER(m_tr1    , 3, "template_range_max");
+	ADD_PARAMETER(m_sr0, 3, "target_range_min");
+	ADD_PARAMETER(m_sr1, 3, "target_range_max");
 
 	ADD_PROPERTY(m_tmpReader, "template")->SetDefaultType("raw");
 	ADD_PROPERTY(m_trgReader, "target"  )->SetDefaultType("raw");
