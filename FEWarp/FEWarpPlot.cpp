@@ -28,7 +28,14 @@ bool FEPlotTemplate::SaveWarpImage(FEMesh& m, FEWarpVolumeConstraint* pc, FEData
 	ImageMap& tmap = pc->GetTemplateMap();
 
 	int N = m.Nodes();
-	for (int i=0; i<N; ++i) s << tmap.value(m.Node(i).m_r0);
+	for (int i = 0; i < N; ++i)
+	{
+		vec3d r0 = m.Node(i).m_r0;
+		if (tmap.valid(r0))
+			s << tmap.value(r0);
+		else
+			s << 0.0;
+	}
 	return true;
 }
 
@@ -67,7 +74,14 @@ bool FEPlotTarget::SaveWarpImage(FEMesh& m, FEWarpVolumeConstraint* pc, FEDataSt
 	ImageMap& smap = pc->GetTargetMap();
 
 	int N = m.Nodes();
-	for (int i=0; i<N; ++i) s << smap.value(m.Node(i).m_rt);
+	for (int i = 0; i < N; ++i)
+	{
+		vec3d rt = m.Node(i).m_rt;
+		if (smap.valid(rt))
+			s << smap.value(rt);
+		else
+			s << 0.0;
+	}
 	return true;
 }
 
@@ -102,8 +116,11 @@ bool FEPlotEnergy::Save(FEMesh &m, FEDataStream& s)
 	int N = m.Nodes();
 	for (int i=0; i<N; ++i)
 	{
-		double T = tmap.value(m.Node(i).m_r0);
-		double S = smap.value(m.Node(i).m_rt);
+		vec3d r0 = m.Node(i).m_r0;
+		vec3d rt = m.Node(i).m_rt;
+
+		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
+		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
 
 		s << (0.5*(T - S)*(T - S));
 	}
@@ -132,9 +149,9 @@ bool FEPlotForce::Save(FEMesh &m, FEDataStream& s)
 		vec3d r0 = m.Node(i).m_r0;
 		vec3d rt = m.Node(i).m_rt;
 
-		double T = tmap.value(r0);
-		double S = smap.value(rt);
-		vec3d G = smap.gradient(rt);
+		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
+		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
+		vec3d G = smap.valid(rt) ? smap.gradient(rt) : vec3d(0.0);
 		vec3d fw = G*((T - S));
 
 		s << fw;
@@ -161,8 +178,10 @@ bool FEPlotDiff::Save(FEMesh& m, FEDataStream& s)
 	int N = m.Nodes();
 	for (int i = 0; i < N; ++i)
 	{
-		double T = tmap.value(m.Node(i).m_r0);
-		double S = smap.value(m.Node(i).m_rt);
+		vec3d r0 = m.Node(i).m_r0;
+		vec3d rt = m.Node(i).m_rt;
+		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
+		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
 
 		s << S - T;
 	}

@@ -20,12 +20,14 @@ double FELogWarpTemplate::value(FEElement& el)
 	FEMesh& mesh = GetFEModel()->GetMesh();
 	ImageMap& tmap = m_wrp->GetTemplateMap();
 	double T = 0.0;
+	int n = 0;
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
-		T += tmap.value(r0);
+		T += tmap.valid(r0) ? tmap.value(r0) : 0.0;
+		n += tmap.valid(r0) ? 1 : 0;
 	}
-	T /= (double)el.Nodes();
+	T /= (double)n;
 	return T;
 }
 
@@ -35,12 +37,15 @@ double FELogWarpTarget::value(FEElement& el)
 	FEMesh& mesh = GetFEModel()->GetMesh();
 	ImageMap& smap = m_wrp->GetTargetMap();
 	double S = 0.0;
+	int n = 0;
+
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		S += smap.value(rt);
+		S += smap.valid(rt) ? smap.value(rt) : 0.0;
+		n += smap.valid(rt) ? 1 : 0;
 	}
-	S /= (double)el.Nodes();
+	S /= (double)n;
 	return S;
 }
 
@@ -51,15 +56,17 @@ double FELogWarpEnergy::value(FEElement& el)
 	ImageMap& tmap = m_wrp->GetTemplateMap();
 	ImageMap& smap = m_wrp->GetTargetMap();
 	double e = 0.0;
+	int n = 0;
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		double T = tmap.value(r0);
-		double S = smap.value(rt);
-		e += (0.5 * (T - S) * (T - S));
+		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
+		double S = tmap.valid(r0) ? smap.value(rt) : 0.0;
+		e += (tmap.valid(r0) || smap.valid(rt)) ? (0.5 * (T - S) * (T - S)) : 0.0;
+		n += (tmap.valid(r0) || smap.valid(rt)) ? 1 : 0;
 	}
-	e /= (double)el.Nodes();
+	e /= (double)n;
 	return e;
 }
 
@@ -74,9 +81,9 @@ vec3d FELogWarpForce_::force(FEElement& el)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		double T = tmap.value(r0);
-		double S = smap.value(rt);
-		vec3d G = smap.gradient(rt);
+		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
+		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
+		vec3d G = smap.valid(rt) ? smap.gradient(rt) : vec3d(0.0);
 		fw += G * ((T - S));
 	}
 	fw /= (double)el.Nodes();
@@ -108,13 +115,15 @@ double FELogWarpDiff::value(FEElement& el)
 	ImageMap& tmap = m_wrp->GetTemplateMap();
 	ImageMap& smap = m_wrp->GetTargetMap();
 	double e = 0.0;
+	int n = 0;
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		double T = tmap.value(r0);
-		double S = smap.value(rt);
-		e += S - T;
+		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
+		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
+		e += (tmap.valid(r0) || smap.valid(rt)) ? S - T : 0.0;
+		n += (tmap.valid(r0) || smap.valid(rt)) ? 1 : 0.0;
 	}
 	e /= (double)el.Nodes();
 	return e;

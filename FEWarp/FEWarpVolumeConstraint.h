@@ -25,8 +25,10 @@ public:
 	mat3ds wrpStiffness(FEMaterialPoint& pt);
 
 protected:
-	double	m_r0[3];	//!< minimum range
-	double	m_r1[3];	//!< maximum range
+	double	m_tr0[3];	//!< minimum range
+	double	m_tr1[3];	//!< maximum range
+	double	m_sr0[3];	//!< minimum range
+	double	m_sr1[3];	//!< maximum range
 	
 
 	Image	m_tmp;	//!< template image

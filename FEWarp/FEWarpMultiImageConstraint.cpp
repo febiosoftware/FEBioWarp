@@ -11,8 +11,14 @@ BEGIN_FECORE_CLASS(FEWarpMultiImageConstraint, FEWarpImageConstraint);
 	ADD_PARAMETER(m_blaugon, "laugon"  );
 	ADD_PARAMETER(m_altol  , "altol"   );
 	ADD_PARAMETER(m_blur   , "blur"    );
-	ADD_PARAMETER(m_r0    , 3, "range_min");
-	ADD_PARAMETER(m_r1    , 3, "range_max");
+	//SL: Leave parameter name for now.
+	ADD_PARAMETER(m_tr0    , 3, "range_min");
+	ADD_PARAMETER(m_tr1    , 3, "range_max");
+	//SL: Don't expose for now to leave this unchanged.
+	//ADD_PARAMETER(m_tr0    , 3, "template_range_min");
+	//ADD_PARAMETER(m_tr1    , 3, "template_range_max");
+	//ADD_PARAMETER(m_sr0, 3, "target_range_min");
+	//ADD_PARAMETER(m_sr1, 3, "target_range_max");
 
 	ADD_PROPERTY(m_tmpReader, "template")->SetDefaultType("raw");
 	ADD_PROPERTY(m_trgReader, "target"  )->SetDefaultType("raw");
