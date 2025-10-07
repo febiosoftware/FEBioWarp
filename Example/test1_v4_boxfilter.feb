@@ -13786,7 +13786,7 @@ Comments:
 		</bc>
 	</Boundary>
 	<Constraints>
-		<constraint type="warp-image">
+		<constraint type="warp-filtered-image">
 			<template file="template.raw">
 				<size>64,64,1</size>
 			</template>
@@ -13796,7 +13796,11 @@ Comments:
 			<range_min>0,0,0</range_min>
 			<range_max>64,64,0</range_max>
 			<penalty lc="1">1</penalty>
-			<blur lc="2">1</blur>
+            <filter type="box blur">
+                <blur lc="2">1</blur>
+				<iterations>5</iterations>
+				<voxel_resolution>0.28,0.28,2</voxel_resolution>
+            </filter>
 			<laugon>1</laugon>
 			<altol>0.1</altol>
 		</constraint>

@@ -1,7 +1,7 @@
 #pragma once
 #include <FECore/ElementDataRecord.h>
 
-class FEWarpImageConstraint;
+class FEWarpVolumeConstraint;
 
 class FELogWarp : public FELogElemData
 {
@@ -9,7 +9,7 @@ public:
 	FELogWarp(FEModel* fem);
 
 protected:
-	FEWarpImageConstraint* m_wrp;
+	FEWarpVolumeConstraint* m_wrp;
 };
 
 class FELogWarpTemplate : public FELogWarp
