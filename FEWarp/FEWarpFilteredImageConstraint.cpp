@@ -45,6 +45,9 @@ bool FEWarpFilteredImageConstraint::Init()
 	m_tmp = m_tmp0;
 	m_trg = m_trg0;
 
+	m_tmap0.SetRange(tr0, tr1);
+	m_smap0.SetRange(sr0, sr1);
+
 	m_pt = 0.0;
 	m_pr = 0.0;
 
@@ -75,11 +78,15 @@ void FEWarpFilteredImageConstraint::Update()
 	std::chrono::time_point<Clock> m_beg;
 	double elapsed;
 	double ct = this->CurrentTime();
+#ifndef NDEBUG
 	std::cout << "current time is " << ct << std::endl;
+#endif
 	bool test1 = ct <= m_pt;
 	bool test2 = ct == 0.0;
 	bool test3 = m_filt->GetBlur() != m_pr;
+#ifndef NDEBUG
 	std::cout << "bools are " << test1 << ", " << test2 << ", " << test3 << std::endl;
+#endif
 	if ((ct <= m_pt) || (ct == 0.0)) { return; }
 	m_pt = ct;
 	

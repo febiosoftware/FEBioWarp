@@ -24,8 +24,11 @@ double FELogWarpTemplate::value(FEElement& el)
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
-		T += tmap.valid(r0) ? tmap.value(r0) : 0.0;
-		n += tmap.valid(r0) ? 1 : 0;
+		if (tmap.valid(r0))
+		{
+			T += tmap.value(r0);
+			n += 1;
+		}
 	}
 	T /= (double)n;
 	return T;
@@ -42,8 +45,11 @@ double FELogWarpTarget::value(FEElement& el)
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		S += smap.valid(rt) ? smap.value(rt) : 0.0;
-		n += smap.valid(rt) ? 1 : 0;
+		if (smap.valid(rt))
+		{
+			S += smap.value(rt);
+			n += 1;
+		}
 	}
 	S /= (double)n;
 	return S;
@@ -61,10 +67,13 @@ double FELogWarpEnergy::value(FEElement& el)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
-		double S = tmap.valid(r0) ? smap.value(rt) : 0.0;
-		e += (tmap.valid(r0) || smap.valid(rt)) ? (0.5 * (T - S) * (T - S)) : 0.0;
-		n += (tmap.valid(r0) || smap.valid(rt)) ? 1 : 0;
+		if (tmap.valid(r0) && smap.valid(rt))
+		{
+			double T = tmap.value(r0);
+			double S = smap.value(rt);
+			e += (0.5 * (T - S) * (T - S));
+			n += 1;
+		}
 	}
 	e /= (double)n;
 	return e;
@@ -77,16 +86,21 @@ vec3d FELogWarpForce_::force(FEElement& el)
 	ImageMap& tmap = m_wrp->GetTemplateMap();
 	ImageMap& smap = m_wrp->GetTargetMap();
 	vec3d fw(0, 0, 0);
+	int n = 0;
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
-		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
-		vec3d G = smap.valid(rt) ? smap.gradient(rt) : vec3d(0.0);
-		fw += G * ((T - S));
+		if (tmap.valid(r0) && smap.valid(rt))
+		{
+			double T = tmap.value(r0);
+			double S = smap.value(rt);
+			vec3d G = smap.gradient(rt);
+			fw += G * ((T - S));
+			n += 1;
+		}
 	}
-	fw /= (double)el.Nodes();
+	fw /= (double)n;
 	return fw;
 }
 
@@ -120,11 +134,14 @@ double FELogWarpDiff::value(FEElement& el)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
-		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
-		e += (tmap.valid(r0) || smap.valid(rt)) ? S - T : 0.0;
-		n += (tmap.valid(r0) || smap.valid(rt)) ? 1 : 0.0;
+		if (tmap.valid(r0) && smap.valid(rt))
+		{
+			double T = tmap.value(r0);
+			double S = smap.value(rt);
+			e += S - T;
+			n += 1;
+		}
 	}
-	e /= (double)el.Nodes();
+	e /= (double)n;
 	return e;
 }

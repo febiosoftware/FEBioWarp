@@ -91,9 +91,7 @@ bool FEPlotTarget::SaveWarpMesh(FEMesh& m, FEWarpSurfaceConstraint* pc, FEDataSt
 	ps->Update();
 	int N = m.Nodes();
 	for (int i=0; i<N; ++i)
-	{
 		s << ps->value(m.Node(i).m_rt);
-	}
 	return true;
 }
 
@@ -119,10 +117,14 @@ bool FEPlotEnergy::Save(FEMesh &m, FEDataStream& s)
 		vec3d r0 = m.Node(i).m_r0;
 		vec3d rt = m.Node(i).m_rt;
 
-		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
-		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
-
-		s << (0.5*(T - S)*(T - S));
+		if (tmap.valid(r0) && smap.valid(rt))
+		{
+			double T = tmap.value(r0);
+			double S = smap.value(rt);
+			s << (0.5 * (T - S) * (T - S));
+		}
+		else
+			s << 0.0;
 	}
 	return true;
 }
@@ -149,12 +151,17 @@ bool FEPlotForce::Save(FEMesh &m, FEDataStream& s)
 		vec3d r0 = m.Node(i).m_r0;
 		vec3d rt = m.Node(i).m_rt;
 
-		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
-		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
-		vec3d G = smap.valid(rt) ? smap.gradient(rt) : vec3d(0.0);
-		vec3d fw = G*((T - S));
+		if (tmap.valid(r0) && smap.valid(rt))
+		{
+			double T = tmap.value(r0);
+			double S = smap.value(rt);
+			vec3d G = smap.gradient(rt);
+			vec3d fw = G * ((T - S));
 
-		s << fw;
+			s << fw;
+		}
+		else 
+			s << vec3d(0.0);
 	}
 	return true;
 }
@@ -180,10 +187,51 @@ bool FEPlotDiff::Save(FEMesh& m, FEDataStream& s)
 	{
 		vec3d r0 = m.Node(i).m_r0;
 		vec3d rt = m.Node(i).m_rt;
-		double T = tmap.valid(r0) ? tmap.value(r0) : 0.0;
-		double S = smap.valid(rt) ? smap.value(rt) : 0.0;
 
-		s << S - T;
+		if (tmap.valid(r0) && smap.valid(rt))
+		{
+			double T = tmap.value(r0);
+			double S = smap.value(rt);
+
+			s << S - T;
+		}
+		else
+			s << 0.0;
+	}
+	return true;
+}
+
+bool FEPlotRawDiff::Save(FEMesh& m, FEDataStream& s)
+{
+	// find the warping constraint
+	FEModel& fem = *GetFEModel();
+	FEWarpVolumeConstraint* pc = 0;
+	for (int i = 0; i < fem.NonlinearConstraints(); ++i)
+	{
+		pc = dynamic_cast<FEWarpVolumeConstraint*>(fem.NonlinearConstraint(i));
+		if (pc) break;
+	}
+	if (pc == 0) return false;
+
+	// get the image map
+	ImageMap& tmap0 = pc->GetRawTemplateMap();
+	ImageMap& smap0 = pc->GetRawTargetMap();
+
+	int N = m.Nodes();
+	for (int i = 0; i < N; ++i)
+	{
+		vec3d r0 = m.Node(i).m_r0;
+		vec3d rt = m.Node(i).m_rt;
+
+		if (tmap0.valid(r0) && smap0.valid(rt))
+		{
+			double T = tmap0.value(r0);
+			double S = smap0.value(rt);
+
+			s << S - T;
+		}
+		else
+			s << 0.0;
 	}
 	return true;
 }

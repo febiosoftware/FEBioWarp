@@ -16,6 +16,8 @@ public: // inherited members
 public:
 	ImageMap& GetTemplateMap() { return m_tmap; }
 	ImageMap& GetTargetMap  () { return m_smap; }
+	ImageMap& GetRawTemplateMap() { return m_tmap0; }
+	ImageMap& GetRawTargetMap() { return m_smap0; }
 
 public:
 	//! Calculate the force at a material point
@@ -39,4 +41,7 @@ protected:
 
 	Image m_tmp0;	//!< original template image data (pre-blurred)
 	Image m_trg0;	//!< original target image data (pre-blurred)
+
+	ImageMap m_tmap0;
+	ImageMap m_smap0;
 };
