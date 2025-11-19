@@ -53,3 +53,17 @@ public:
 	FEPlotRawDiff(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
 	virtual bool Save(FEMesh& m, FEDataStream& s);
 };
+
+class FEPlotGradT : public FEPlotNodeData
+{
+public:
+	FEPlotGradT(FEModel* pfem) : FEPlotNodeData(pfem, PLT_VEC3F, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};
+
+class FEPlotGradS : public FEPlotNodeData
+{
+public:
+	FEPlotGradS(FEModel* pfem) : FEPlotNodeData(pfem, PLT_VEC3F, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};

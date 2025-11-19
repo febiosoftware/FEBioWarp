@@ -20,7 +20,7 @@ public: // inherited members
 	void Serialize(DumpStream& ar) override;
 	void Update() override;
 	void BuildMatrixProfile(FEGlobalMatrix& M) override;
-
+	double GetPenalty() { return m_k; }
 protected:
 	void ElementWarpForce    (FESolidDomain& dom, FESolidElement& el, vector<double>& fe);
 	void ElementWarpStiffness(FESolidDomain& dom, FESolidElement& el, matrix& ke);
