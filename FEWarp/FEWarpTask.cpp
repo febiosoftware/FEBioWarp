@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FEWarpTask.h"
 #include <FECore/FEModel.h>
-#include <XML/XMLReader.h>
+#include <FEBioXML/XMLReader.h>
 #include "FEWarpConstraint.h"
 #include "FEWarpImageConstraint.h"
 #include <FEBioXML/xmltool.h>
