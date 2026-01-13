@@ -34,7 +34,7 @@ vec3d FEWarpVolumeConstraint::wrpForce(FEMaterialPoint& mp)
 		vec3d G = m_smap.gradient(mp.m_rt);
 
 		// evaluate force
-		vec3d Fw = G * ((S - T) * m_k);
+		vec3d Fw = - G * ((T - S) * m_k);
 
 		return Fw;
 	}

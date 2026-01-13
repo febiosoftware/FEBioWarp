@@ -134,10 +134,12 @@ bool FEPlotForce::Save(FEMesh &m, FEDataStream& s)
 	// find the warping constraint
 	FEModel& fem = *GetFEModel();
 	FEWarpVolumeConstraint* pc = 0;
+	FEWarpConstraint* ppc = 0;
 	for (int i=0; i<fem.NonlinearConstraints(); ++i)
 	{
 		pc = dynamic_cast<FEWarpVolumeConstraint*>(fem.NonlinearConstraint(i));
-		if (pc) break;
+		ppc = dynamic_cast<FEWarpConstraint*>(fem.NonlinearConstraint(i));
+		if (pc && ppc) break;
 	}
 	if (pc == 0) return false;
 
@@ -145,6 +147,7 @@ bool FEPlotForce::Save(FEMesh &m, FEDataStream& s)
 	ImageMap& tmap = pc->GetTemplateMap();
 	ImageMap& smap = pc->GetTargetMap();
 
+	double lam = ppc->GetPenalty();
 	int N = m.Nodes();
 	for (int i=0; i<N; ++i) 
 	{
@@ -156,7 +159,7 @@ bool FEPlotForce::Save(FEMesh &m, FEDataStream& s)
 			double T = tmap.value(r0);
 			double S = smap.value(rt);
 			vec3d G = smap.gradient(rt);
-			vec3d fw = G * ((T - S));
+			vec3d fw = - G * ((T - S)) * lam;
 
 			s << fw;
 		}
@@ -193,7 +196,7 @@ bool FEPlotDiff::Save(FEMesh& m, FEDataStream& s)
 			double T = tmap.value(r0);
 			double S = smap.value(rt);
 
-			s << S - T;
+			s << T - S;
 		}
 		else
 			s << 0.0;
@@ -232,6 +235,72 @@ bool FEPlotRawDiff::Save(FEMesh& m, FEDataStream& s)
 		}
 		else
 			s << 0.0;
+	}
+	return true;
+}
+
+bool FEPlotGradT::Save(FEMesh& m, FEDataStream& s)
+{
+	// find the warping constraint
+	FEModel& fem = *GetFEModel();
+	FEWarpVolumeConstraint* pc = 0;
+	FEWarpConstraint* ppc = 0;
+	for (int i = 0; i < fem.NonlinearConstraints(); ++i)
+	{
+		pc = dynamic_cast<FEWarpVolumeConstraint*>(fem.NonlinearConstraint(i));
+		ppc = dynamic_cast<FEWarpConstraint*>(fem.NonlinearConstraint(i));
+		if (pc && ppc) break;
+	}
+	if (pc == 0) return false;
+
+	// get the image map
+	ImageMap& tmap = pc->GetTemplateMap();
+
+	int N = m.Nodes();
+	for (int i = 0; i < N; ++i)
+	{
+		vec3d r0 = m.Node(i).m_r0;
+
+		if (tmap.valid(r0))
+		{
+			vec3d g = tmap.gradient(r0);
+			s << g;
+		}
+		else
+			s << vec3d(0.0);
+	}
+	return true;
+}
+
+bool FEPlotGradS::Save(FEMesh& m, FEDataStream& s)
+{
+	// find the warping constraint
+	FEModel& fem = *GetFEModel();
+	FEWarpVolumeConstraint* pc = 0;
+	FEWarpConstraint* ppc = 0;
+	for (int i = 0; i < fem.NonlinearConstraints(); ++i)
+	{
+		pc = dynamic_cast<FEWarpVolumeConstraint*>(fem.NonlinearConstraint(i));
+		ppc = dynamic_cast<FEWarpConstraint*>(fem.NonlinearConstraint(i));
+		if (pc && ppc) break;
+	}
+	if (pc == 0) return false;
+
+	// get the image map
+	ImageMap& smap = pc->GetTargetMap();
+
+	int N = m.Nodes();
+	for (int i = 0; i < N; ++i)
+	{
+		vec3d rt = m.Node(i).m_rt;
+
+		if (smap.valid(rt))
+		{
+			vec3d g = smap.gradient(rt);
+			s << g;
+		}
+		else
+			s << vec3d(0.0);
 	}
 	return true;
 }
