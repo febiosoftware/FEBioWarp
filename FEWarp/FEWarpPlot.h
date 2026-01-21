@@ -33,10 +33,31 @@ public:
 	virtual bool Save(FEMesh& m, FEDataStream& s);
 };
 
+class FEPlotNCCEnergy : public FEPlotNodeData
+{
+public:
+	FEPlotNCCEnergy(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};
+
 class FEPlotForce : public FEPlotNodeData
 {
 public:
 	FEPlotForce(FEModel* pfem) : FEPlotNodeData(pfem, PLT_VEC3F, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};
+
+class FEPlotNCCForce : public FEPlotNodeData
+{
+public:
+	FEPlotNCCForce(FEModel* pfem) : FEPlotNodeData(pfem, PLT_VEC3F, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};
+
+class FEPlotNCCForce2 : public FEPlotNodeData
+{
+public:
+	FEPlotNCCForce2(FEModel* pfem) : FEPlotNodeData(pfem, PLT_VEC3F, FMT_NODE) {}
 	virtual bool Save(FEMesh& m, FEDataStream& s);
 };
 

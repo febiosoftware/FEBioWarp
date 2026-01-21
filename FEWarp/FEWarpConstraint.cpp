@@ -41,17 +41,30 @@ bool FEWarpConstraint::Init()
 		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(domList.GetDomain(i));
 		if (dom)
 		{
+            nint += dom->Elements();
+		}
+	}
+
+    m_Lm.resize(nint);
+
+    nint = 0;
+	ND = domList.size();
+	for (int i=0; i<ND; ++i)
+	{
+		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(domList.GetDomain(i));
+		if (dom)
+		{
 			int NE = dom->Elements();
 			for (int j=0; j<NE; ++j)
 			{
 				FESolidElement& el = dom->Element(j);
-				nint += el.GaussPoints();
+
+                m_Lm[nint].resize(el.GaussPoints());
+
+                nint++;
 			}
 		}
 	}
-
-	// allocate storage for Lagrange multipliers
-	m_Lm.assign(nint, vec3d(0,0,0));
 
 	return true;
 }
@@ -66,8 +79,7 @@ void FEWarpConstraint::LoadVector(FEGlobalVector& R, const FETimeInfo& tp)
 	vector<int> lm;
 
 	// reset multiplier counter
-	m_nint = 0;
-
+    int counter = 0;
 	// loop over all domains
 	FEDomainList& domList = GetDomainList();
 	int NDOM = domList.size();
@@ -77,6 +89,7 @@ void FEWarpConstraint::LoadVector(FEGlobalVector& R, const FETimeInfo& tp)
 		if (dom)
 		{
 			int NEL = dom->Elements();
+            #pragma omp parallel for private(fe, lm)
 			for (int i=0; i<NEL; ++i)
 			{
 				FESolidElement& el = dom->Element(i);
@@ -86,20 +99,22 @@ void FEWarpConstraint::LoadVector(FEGlobalVector& R, const FETimeInfo& tp)
 				fe.assign(ndof, 0);
 
 				// apply body forces
-				ElementWarpForce(*dom, el, fe);
+				ElementWarpForce(*dom, el, fe, counter + i);
+                
+                // get the element's LM vector
+                dom->UnpackLM(el, lm);
 
-				// get the element's LM vector
-				dom->UnpackLM(el, lm);
-
-				// assemble element 'fe'-vector into global R vector
-				R.Assemble(el.m_node, lm, fe);
+                // assemble element 'fe'-vector into global R vector
+                R.Assemble(el.m_node, lm, fe);
 			}
+
+            counter += NEL;
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------
-void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, vector<double>& fe)
+void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, vector<double>& fe, int counter)
 {
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
@@ -135,7 +150,7 @@ void FEWarpConstraint::ElementWarpForce(FESolidDomain& dom, FESolidElement& el, 
 		detJ = dom.detJ0(el, n)*gw[n];
 
 		// get the force
-		f = m_Lm[m_nint++] + wrpForce(mp);
+        f = m_Lm[counter][n] + wrpForce(mp);
 
 		H = el.H(n);
 
@@ -248,10 +263,10 @@ bool FEWarpConstraint::Augment(int naug, const FETimeInfo& tp)
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
 
-	vector<vec3d> L0(m_Lm);
-	vector<vec3d> L1(m_Lm);
+    vector<vector<vec3d>> L0(m_Lm);
+	vector<vector<vec3d>> L1(m_Lm);
 
-	m_nint = 0;
+    int counter = 0;
 	FEDomainList& domList = GetDomainList();
 	int NDOM = domList.size();
 	for (int i=0; i<NDOM; ++i)
@@ -260,6 +275,7 @@ bool FEWarpConstraint::Augment(int naug, const FETimeInfo& tp)
 		if (dom)
 		{
 			int NE = dom->Elements();
+            #pragma omp parallel for
 			for (int j=0; j<NE; ++j)
 			{
 				FESolidElement& el = dom->Element(j);
@@ -274,25 +290,31 @@ bool FEWarpConstraint::Augment(int naug, const FETimeInfo& tp)
 					rt[i] = mesh.Node(el.m_node[i]).m_rt;
 				}
 
-				for (int n=0; n<nint; ++n, ++m_nint)
+				for (int n=0; n<nint; ++n)
 				{
 					FEMaterialPoint& mp = *el.GetMaterialPoint(n);
 					FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
 					mp.m_r0 = el.Evaluate(r0, n);
 					mp.m_rt = el.Evaluate(rt, n);
 
-					L1[m_nint] = L0[m_nint] + wrpForce(mp);
+                    L1[counter + j][n] = L0[counter + j][n] + wrpForce(mp);
 				}
+
+                
 			}
+
+            counter += NE;
 		}
 	}
 
-	// calculate the norm
-	double normL0 = 0, normL1 = 0;
-	for (int i=0; i<m_nint; ++i) 
+    double normL0 = 0, normL1 = 0;
+	for (int i=0; i<counter; ++i) 
 	{
-		normL0 += L0[i]*L0[i];
-		normL1 += L1[i]*L1[i];
+        for(int j=0; j<L0[i].size(); ++j)
+        {
+            normL0 += L0[i][j]*L0[i][j];
+            normL1 += L1[i][j]*L1[i][j];
+        }
 	}
 
 	double Lerr = fabs((normL1 - normL0)/normL1);
@@ -320,19 +342,14 @@ void FEWarpConstraint::Serialize(DumpStream& ar)
 {
 	FEBodyConstraint::Serialize(ar);
 
-	if (ar.IsShallow() == false)
-	{
-		if (ar.IsSaving())
-		{
-			ar << m_Lm;
-			ar << m_nint;
-		}
-		else
-		{
-			ar >> m_Lm;
-			ar >> m_nint;
-		}
-	}
+    if (ar.IsSaving())
+    {
+        ar << m_Lm;
+    }
+    else
+    {
+        ar >> m_Lm;
+    }
 }
 
 //-----------------------------------------------------------------------------

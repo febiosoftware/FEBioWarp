@@ -21,10 +21,10 @@ public:
 
 public:
 	//! Calculate the force at a material point
-	vec3d wrpForce(FEMaterialPoint& pt);
+	virtual vec3d wrpForce(FEMaterialPoint& pt);
 
 	//! calculate the stiffness at a material point
-	mat3ds wrpStiffness(FEMaterialPoint& pt);
+	virtual mat3ds wrpStiffness(FEMaterialPoint& pt);
 
 protected:
 	double	m_tr0[3];	//!< minimum range

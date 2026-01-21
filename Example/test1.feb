@@ -21624,10 +21624,13 @@ Comments:
 			<var type="warp-template"/>
 			<var type="warp-target"/>
 			<var type="warp-energy"/>
+            <var type="warp-force"/>
+            <var type="warp-ncc-energy"/>
+            <var type="warp-ncc-force"/>
 		</plotfile>
-		<logfile>
+		<!-- <logfile>
 			<node_data data="ux">6338</node_data>
 			<element_data data="warp-template;warp-target;warp-energy;warp-force-x;warp-force-y;warp-force-z"/>
-		</logfile>
+		</logfile> -->
 	</Output>
 </febio_spec>

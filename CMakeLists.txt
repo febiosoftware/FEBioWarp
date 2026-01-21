@@ -32,7 +32,7 @@ elseif(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
 else()
 	add_definitions(-DLINUX)
-    add_compile_options(-static-libstdc++ -static-libgcc -w -Wall)
+    add_compile_options(-static-libstdc++ -static-libgcc -w -Wall -fopenmp)
     
     set(CMAKE_BUILD_RPATH_USE_LINK_PATH FALSE)
     set(CMAKE_BUILD_RPATH $ORIGIN/../lib/)

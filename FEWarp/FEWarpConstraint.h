@@ -22,7 +22,7 @@ public: // inherited members
 	void BuildMatrixProfile(FEGlobalMatrix& M) override;
 	double GetPenalty() { return m_k; }
 protected:
-	void ElementWarpForce    (FESolidDomain& dom, FESolidElement& el, vector<double>& fe);
+	void ElementWarpForce    (FESolidDomain& dom, FESolidElement& el, vector<double>& fe, int counter);
 	void ElementWarpStiffness(FESolidDomain& dom, FESolidElement& el, matrix& ke);
 
 	//! Calculate the force at a material point
@@ -36,6 +36,5 @@ protected:
 	double		m_altol;	//!< augmentation tolerance
 	double		m_k;		//!< penalty parameter
 
-	vector<vec3d>	m_Lm;	//!< Lagrange multipliers
-	int				m_nint;	//!< running counter for multipliers
+    vector<vector<vec3d>>	m_Lm;	//!< Lagrange multipliers
 };
