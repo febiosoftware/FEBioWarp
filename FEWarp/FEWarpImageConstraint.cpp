@@ -5,66 +5,53 @@
 #include <FECore/log.h>
 
 //-----------------------------------------------------------------------------
-BEGIN_FECORE_CLASS(FEWarpImageConstraint, FEWarpConstraint);
-	ADD_PARAMETER(m_k      , "penalty" );
-	ADD_PARAMETER(m_blaugon, "laugon"  );
-	ADD_PARAMETER(m_altol  , "altol"   );
-	ADD_PARAMETER(m_blur   , "blur"    );
-	ADD_PARAMETER(m_r0    , 3, "range_min");
-	ADD_PARAMETER(m_r1    , 3, "range_max");
-
-	ADD_PROPERTY(m_tmpReader, "template")->SetDefaultType("raw");
-	ADD_PROPERTY(m_trgReader, "target"  )->SetDefaultType("raw");
-END_FECORE_CLASS();
-
-//-----------------------------------------------------------------------------
-FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpConstraint(pfem), m_tmap(m_tmp), m_smap(m_trg)
+FEWarpImageConstraint::FEWarpImageConstraint(FEModel* pfem) : FEWarpVolumeConstraint(pfem)
 {
-	m_tmpReader = nullptr;
-	m_trgReader = nullptr;
-
 	m_blur = 0.0;
 	m_blur_cur = 0.0;
+	m_blur_method = 0; // default average blur
 
-	m_r0[0] = m_r0[1] = m_r0[2] = 0.0;
-	m_r1[0] = m_r1[1] = m_r1[2] = 1.0;
+	m_tr0[0] = m_tr0[1] = m_tr0[2] = 0.0;
+	m_tr1[0] = m_tr1[1] = m_tr1[2] = 1.0;
+	m_sr0[0] = m_sr0[1] = m_sr0[2] = 0.0;
+	m_sr1[0] = m_sr1[1] = m_sr1[2] = 1.0;
 }
+
+//-----------------------------------------------------------------------------
+FEWarpImageConstraint::~FEWarpImageConstraint() {}
 
 //-----------------------------------------------------------------------------
 bool FEWarpImageConstraint::Init()
 {
-	if ((m_tmpReader == nullptr) || (m_trgReader == nullptr)) return false;
-
 	if (FEWarpConstraint::Init() == false) return false;
-
-	if (m_tmpReader->GetImage3D(m_tmp0) == false) return false;
-	if (m_trgReader->GetImage3D(m_trg0) == false) return false;
 
 	int nx = m_tmp0.width ();
 	int ny = m_tmp0.height();
 	int nz = m_tmp0.depth ();
 
-	vec3d r0(m_r0[0], m_r0[1], m_r0[2]);
-	vec3d r1(m_r1[0], m_r1[1], m_r1[2]);
+	vec3d tr0(m_tr0[0], m_tr0[1], m_tr0[2]);
+	vec3d tr1(m_tr1[0], m_tr1[1], m_tr1[2]);
+	// SL: Leave this unchanged for now by copying the template range.
+	m_sr0[0] = m_tr0[0]; m_sr0[1] = m_tr0[1]; m_sr0[2] = m_tr0[2];
+	m_sr1[0] = m_tr1[0]; m_sr1[1] = m_tr1[1]; m_sr1[2] = m_tr1[2];
+	vec3d sr0(m_sr0[0], m_sr0[1], m_sr0[2]);
+	vec3d sr1(m_sr1[0], m_sr1[1], m_sr1[2]);
 
-	m_tmap.SetRange(r0, r1);
-	m_smap.SetRange(r0, r1);
+	m_tmap.SetRange(tr0, tr1);
+	m_smap.SetRange(sr0, sr1);
 
 	m_tmp = m_tmp0;
 	m_trg = m_trg0;
+
+	BlurMethod blurMethod = (BlurMethod)m_blur_method;
 
 	m_blur_cur = m_blur;
 	if (m_blur > 0)
 	{
 		feLog("Blurring images, blur factor %lg\n", m_blur);
 
-#ifdef HAVE_MKL
-		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
-		if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); else fftblur_3d(m_trg, m_trg0, (float)m_blur);
-#else
-		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float) m_blur); else blur_image(m_tmp, m_tmp0, (float) m_blur);
-		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float) m_blur); else blur_image(m_trg, m_trg0, (float) m_blur);
-#endif
+		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float)m_blur, blurMethod); else blur_image_3d(m_tmp, m_tmp0, (float)m_blur, blurMethod);
+		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float)m_blur, blurMethod); else blur_image_3d(m_trg, m_trg0, (float)m_blur, blurMethod);
 	}
 
 	return true;
@@ -82,49 +69,44 @@ void FEWarpImageConstraint::Update()
 
 		feLog("Blurring images, blur factor %lg\n", m_blur);
 
-#ifdef HAVE_MKL
-		if (m_tmp0.depth() == 1) fftblur_2d(m_tmp, m_tmp0, (float)m_blur); else fftblur_3d(m_tmp, m_tmp0, (float)m_blur);
-		if (m_trg0.depth() == 1) fftblur_2d(m_trg, m_trg0, (float)m_blur); else fftblur_3d(m_trg, m_trg0, (float)m_blur);
-#else
-		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float) m_blur); else blur_image(m_tmp, m_tmp0, (float) m_blur);
-		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float) m_blur); else blur_image(m_trg, m_trg0, (float) m_blur);
-#endif
+		BlurMethod blurMethod = (BlurMethod)m_blur_method;
+
+		if (m_tmp0.depth() == 1) blur_image_2d(m_tmp, m_tmp0, (float)m_blur, blurMethod); else blur_image_3d(m_tmp, m_tmp0, (float)m_blur, blurMethod);
+		if (m_trg0.depth() == 1) blur_image_2d(m_trg, m_trg0, (float)m_blur, blurMethod); else blur_image_3d(m_trg, m_trg0, (float)m_blur, blurMethod);
 	}
 }
 
-//-----------------------------------------------------------------------------
-vec3d FEWarpImageConstraint::wrpForce(FEMaterialPoint& mp)
+//=====================================================================
+BEGIN_FECORE_CLASS(FEWarpSingleImageConstraint, FEWarpConstraint);
+	ADD_PARAMETER(m_k      , "penalty" );
+	ADD_PARAMETER(m_blaugon, "laugon"  );
+	ADD_PARAMETER(m_altol  , "altol"   );
+	ADD_PARAMETER(m_blur   , "blur"    );
+	ADD_PARAMETER(m_blur_method   , "blur_method"    )->setEnums("AVERAGE\0FFT\0");
+	//SL: Leave parameter name unchanged for now.
+	ADD_PARAMETER(m_tr0    , 3, "range_min");
+	ADD_PARAMETER(m_tr1    , 3, "range_max");
+	//SL: Don't expose for now to leave this unchanged.
+	//ADD_PARAMETER(m_sr0, 3, "target_range_min");
+	//ADD_PARAMETER(m_sr1, 3, "target_range_max");
+
+	ADD_PROPERTY(m_tmpReader, "template")->SetDefaultType("raw");
+	ADD_PROPERTY(m_trgReader, "target"  )->SetDefaultType("raw");
+END_FECORE_CLASS();
+
+FEWarpSingleImageConstraint::FEWarpSingleImageConstraint(FEModel* fem) : FEWarpImageConstraint(fem)
 {
-	// evaluate template
-	double T = m_tmap.value(mp.m_r0);
-
-	// evaluate target
-	double S = m_smap.value(mp.m_rt);
-
-	// evaluate target gradient
-	vec3d G = m_smap.gradient(mp.m_rt);
-
-	// evaluate force
-	vec3d Fw = G*((S - T)*m_k);
-
-	return Fw;
+	m_tmpReader = nullptr;
+	m_trgReader = nullptr;
 }
 
 //-----------------------------------------------------------------------------
-mat3ds FEWarpImageConstraint::wrpStiffness(FEMaterialPoint& mp)
+bool FEWarpSingleImageConstraint::Init()
 {
-	// template value
-	double T = m_tmap.value(mp.m_r0);
+	if ((m_tmpReader == nullptr) || (m_trgReader == nullptr)) return false;
 
-	// target value
-	double S = m_smap.value(mp.m_rt);
+	if (m_tmpReader->GetImage3D(m_tmp0) == false) return false;
+	if (m_trgReader->GetImage3D(m_trg0) == false) return false;
 
-	// calculate target gradient
-	vec3d dS = m_smap.gradient(mp.m_rt);
-
-	// calculate target hessian
-	mat3ds H = m_smap.hessian(mp.m_rt);
-
-	// warping stiffness
-	return H*((T - S)*m_k) - dyad(dS)*m_k;
+	return FEWarpImageConstraint::Init();
 }

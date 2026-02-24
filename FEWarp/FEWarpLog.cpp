@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FEWarpLog.h"
-#include "FEWarpImageConstraint.h"
+#include "FEWarpVolumeConstraint.h"
 #include <FECore/FEModel.h>
 
 FELogWarp::FELogWarp(FEModel* fem) : FELogElemData(fem) 
@@ -9,7 +9,7 @@ FELogWarp::FELogWarp(FEModel* fem) : FELogElemData(fem)
 	m_wrp = nullptr;
 	for (int i = 0; i < fem->NonlinearConstraints(); ++i)
 	{
-		m_wrp = dynamic_cast<FEWarpImageConstraint*>(fem->NonlinearConstraint(i));
+		m_wrp = dynamic_cast<FEWarpVolumeConstraint*>(fem->NonlinearConstraint(i));
 		if (m_wrp) break;
 	}
 }
@@ -20,12 +20,17 @@ double FELogWarpTemplate::value(FEElement& el)
 	FEMesh& mesh = GetFEModel()->GetMesh();
 	ImageMap& tmap = m_wrp->GetTemplateMap();
 	double T = 0.0;
+	int n = 0;
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
-		T += tmap.value(r0);
+		if (tmap.valid(r0))
+		{
+			T += tmap.value(r0);
+			n += 1;
+		}
 	}
-	T /= (double)el.Nodes();
+	T /= (double)n;
 	return T;
 }
 
@@ -35,12 +40,18 @@ double FELogWarpTarget::value(FEElement& el)
 	FEMesh& mesh = GetFEModel()->GetMesh();
 	ImageMap& smap = m_wrp->GetTargetMap();
 	double S = 0.0;
+	int n = 0;
+
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		S += smap.value(rt);
+		if (smap.valid(rt))
+		{
+			S += smap.value(rt);
+			n += 1;
+		}
 	}
-	S /= (double)el.Nodes();
+	S /= (double)n;
 	return S;
 }
 
@@ -51,15 +62,20 @@ double FELogWarpEnergy::value(FEElement& el)
 	ImageMap& tmap = m_wrp->GetTemplateMap();
 	ImageMap& smap = m_wrp->GetTargetMap();
 	double e = 0.0;
+	int n = 0;
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		double T = tmap.value(r0);
-		double S = smap.value(rt);
-		e += (0.5 * (T - S) * (T - S));
+		if (tmap.valid(r0) && smap.valid(rt))
+		{
+			double T = tmap.value(r0);
+			double S = smap.value(rt);
+			e += (0.5 * (T - S) * (T - S));
+			n += 1;
+		}
 	}
-	e /= (double)el.Nodes();
+	e /= (double)n;
 	return e;
 }
 
@@ -70,16 +86,21 @@ vec3d FELogWarpForce_::force(FEElement& el)
 	ImageMap& tmap = m_wrp->GetTemplateMap();
 	ImageMap& smap = m_wrp->GetTargetMap();
 	vec3d fw(0, 0, 0);
+	int n = 0;
 	for (int i = 0; i < el.Nodes(); ++i)
 	{
 		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
 		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
-		double T = tmap.value(r0);
-		double S = smap.value(rt);
-		vec3d G = smap.gradient(rt);
-		fw += G * ((T - S));
+		if (tmap.valid(r0) && smap.valid(rt))
+		{
+			double T = tmap.value(r0);
+			double S = smap.value(rt);
+			vec3d G = smap.gradient(rt);
+			fw += G * ((T - S));
+			n += 1;
+		}
 	}
-	fw /= (double)el.Nodes();
+	fw /= (double)n;
 	return fw;
 }
 
@@ -99,4 +120,28 @@ double FELogWarpForceZ::value(FEElement& el)
 {
 	vec3d fw = force(el);
 	return fw.z;
+}
+
+double FELogWarpDiff::value(FEElement& el)
+{
+	if (m_wrp == nullptr) return 0.0;
+	FEMesh& mesh = GetFEModel()->GetMesh();
+	ImageMap& tmap = m_wrp->GetTemplateMap();
+	ImageMap& smap = m_wrp->GetTargetMap();
+	double e = 0.0;
+	int n = 0;
+	for (int i = 0; i < el.Nodes(); ++i)
+	{
+		vec3d r0 = mesh.Node(el.m_node[i]).m_r0;
+		vec3d rt = mesh.Node(el.m_node[i]).m_rt;
+		if (tmap.valid(r0) && smap.valid(rt))
+		{
+			double T = tmap.value(r0);
+			double S = smap.value(rt);
+			e += S - T;
+			n += 1;
+		}
+	}
+	e /= (double)n;
+	return e;
 }

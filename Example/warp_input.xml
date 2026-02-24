@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fewarp_spec version="1.0">
+	<constraint type="warp-image">
+		<template type="raw" file="template.raw">
+			<size>64,64,1</size>
+		</template>
+		<target type="raw" file="target.raw">
+			<size>64,64,1</size>
+		</target>
+		<range_min>0,0,0</range_min>
+		<range_max>64,64,0</range_max>
+		<penalty>50</penalty>
+		<blur_method>1</blur_method>
+		<blur>10</blur>
+		<laugon>1</laugon>
+		<altol>0.1</altol>
+	</constraint>
+</fewarp_spec>

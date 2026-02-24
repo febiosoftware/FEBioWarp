@@ -27,21 +27,18 @@ FEWarpConstraint::~FEWarpConstraint(void)
 //-----------------------------------------------------------------------------
 bool FEWarpConstraint::Init()
 {
+	if (!FEBodyConstraint::Init()) return false;
+
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
 
-	// if no domains are selected, add all domains
-	if (m_dom.empty()) 
-	{
-		for (int i=0; i<mesh.Domains(); ++i) m_dom.push_back(i);
-	}
-
 	// figure out how many integration points we need
+	FEDomainList& domList = GetDomainList();
 	int nint = 0;
-	int ND = m_dom.size();
+	int ND = domList.size();
 	for (int i=0; i<ND; ++i)
 	{
-		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[i]));
+		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(domList.GetDomain(i));
 		if (dom)
 		{
 			int NE = dom->Elements();
@@ -72,10 +69,11 @@ void FEWarpConstraint::LoadVector(FEGlobalVector& R, const FETimeInfo& tp)
 	m_nint = 0;
 
 	// loop over all domains
-	int NDOM = m_dom.size();
+	FEDomainList& domList = GetDomainList();
+	int NDOM = domList.size();
 	for (int n=0; n<NDOM; ++n)
 	{
-		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[n]));
+		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(domList.GetDomain(n));
 		if (dom)
 		{
 			int NEL = dom->Elements();
@@ -160,10 +158,11 @@ void FEWarpConstraint::StiffnessMatrix(FELinearSystem& LS, const FETimeInfo& tp)
 	FEMesh& mesh = fem.GetMesh();
 
 	// loop over all domains
-	int NDOM = m_dom.size();
+	FEDomainList& domList = GetDomainList();
+	int NDOM = domList.size();
 	for (int n=0; n<NDOM; ++n)
 	{
-		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[n]));
+		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(domList.GetDomain(n));
 		if (dom)
 		{
 			// repeat over all solid elements
@@ -244,7 +243,7 @@ void FEWarpConstraint::ElementWarpStiffness(FESolidDomain& dom, FESolidElement& 
 //-----------------------------------------------------------------------------
 bool FEWarpConstraint::Augment(int naug, const FETimeInfo& tp)
 {
-	if (m_blaugon == false) return true;
+	if ((m_blaugon == false) || (m_altol <= 0.0)) return true;
 
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();
@@ -253,10 +252,11 @@ bool FEWarpConstraint::Augment(int naug, const FETimeInfo& tp)
 	vector<vec3d> L1(m_Lm);
 
 	m_nint = 0;
-	int NDOM = m_dom.size();
+	FEDomainList& domList = GetDomainList();
+	int NDOM = domList.size();
 	for (int i=0; i<NDOM; ++i)
 	{
-		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(&mesh.Domain(m_dom[i]));
+		FESolidDomain* dom = dynamic_cast<FESolidDomain*>(domList.GetDomain(i));
 		if (dom)
 		{
 			int NE = dom->Elements();
@@ -318,19 +318,17 @@ void FEWarpConstraint::Update()
 //-----------------------------------------------------------------------------
 void FEWarpConstraint::Serialize(DumpStream& ar)
 {
-	FENLConstraint::Serialize(ar);
+	FEBodyConstraint::Serialize(ar);
 
 	if (ar.IsShallow() == false)
 	{
 		if (ar.IsSaving())
 		{
-			ar << m_dom;
 			ar << m_Lm;
 			ar << m_nint;
 		}
 		else
 		{
-			ar >> m_dom;
 			ar >> m_Lm;
 			ar >> m_nint;
 		}
