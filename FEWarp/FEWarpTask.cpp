@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "FEWarpTask.h"
 #include <FECore/FEModel.h>
-#include <FEBioXML/XMLReader.h>
+#include <FECore/XMLReader.h>
 #include "FEWarpConstraint.h"
 #include "FEWarpImageConstraint.h"
-#include <FEBioXML/xmltool.h>
+#include <FECore/xmltool.h>
 #include <FECore/FEAnalysis.h>
 #include <FECore/FELoadCurve.h>
 #include <FECore/FEPlotDataStore.h>
