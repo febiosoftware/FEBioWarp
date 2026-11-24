@@ -40,6 +40,13 @@ public:
 	virtual bool Save(FEMesh& m, FEDataStream& s);
 };
 
+class FEPlotNCCForce : public FEPlotNodeData
+{
+public:
+	FEPlotNCCForce(FEModel* pfem) : FEPlotNodeData(pfem, PLT_VEC3F, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};
+
 class FEPlotDiff : public FEPlotNodeData
 {
 public:
@@ -51,6 +58,27 @@ class FEPlotRawDiff : public FEPlotNodeData
 {
 public:
 	FEPlotRawDiff(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};
+
+class FEPlotNCC : public FEPlotNodeData
+{
+public:
+	FEPlotNCC(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};
+
+class FEPlotRawNCC : public FEPlotNodeData
+{
+public:
+	FEPlotRawNCC(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
+	virtual bool Save(FEMesh& m, FEDataStream& s);
+};
+
+class FEPlotNCCEnergy : public FEPlotNodeData
+{
+public:
+	FEPlotNCCEnergy(FEModel* pfem) : FEPlotNodeData(pfem, PLT_FLOAT, FMT_NODE) {}
 	virtual bool Save(FEMesh& m, FEDataStream& s);
 };
 

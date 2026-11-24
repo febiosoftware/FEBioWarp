@@ -57,7 +57,17 @@ bool FEWarpFilteredImageConstraint::Init()
 	fem->EvaluateLoadParameters();
 	
 	// Initialize filters
-	if (m_filt->Init() == false) return false;
+	if (m_filt == nullptr)
+	{
+		feLog("ERROR: image filter is not defined\n");
+		return false;
+	}
+
+	if (m_filt->Init() == false)
+	{
+		feLog("ERROR: image filter failed to initialize\n");
+		return false;
+	}
 
 	// blur images
 	Update();
@@ -131,10 +141,29 @@ FEWarpSingleFilteredImageConstraint::FEWarpSingleFilteredImageConstraint(FEModel
 //-----------------------------------------------------------------------------
 bool FEWarpSingleFilteredImageConstraint::Init()
 {
-	if ((m_tmpReader == nullptr) || (m_trgReader == nullptr)) return false;
+	if (m_tmpReader == nullptr)
+	{
+		feLog("ERROR: template image source is not defined\n");
+		return false;
+	}
 
-	if (m_tmpReader->GetImage3D(m_tmp0) == false) return false;
-	if (m_trgReader->GetImage3D(m_trg0) == false) return false;
+	if (m_trgReader == nullptr)
+	{
+		feLog("ERROR: target image source is not defined\n");
+		return false;
+	}
+
+	if (m_tmpReader->GetImage3D(m_tmp0) == false)
+	{
+		feLog("ERROR: could not load template image\n");
+		return false;
+	}
+
+	if (m_trgReader->GetImage3D(m_trg0) == false)
+	{
+		feLog("ERROR: could not load target image\n");
+		return false;
+	}
 
 	return FEWarpFilteredImageConstraint::Init();
 }

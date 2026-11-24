@@ -7,6 +7,8 @@
 #include "FEWarpVolumeConstraint.h"
 #include "FEWarpImageConstraint.h"
 #include "FEWarpFilteredImageConstraint.h"
+#include "FEWarpFilteredImageConstraintNorm.h"
+#include "FEWarpImageConstraintNorm.h"
 #include "FEWarpMultiImageConstraint.h"
 #include "FEWarpSurfaceConstraint.h"
 #include "FEWarpPlot.h"
@@ -29,7 +31,9 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 
 	// constraints
 	REGISTER_FECORE_CLASS(FEWarpSingleImageConstraint, "warp-image");
+	REGISTER_FECORE_CLASS(FEWarpImageConstraintNorm, "warp-image-norm");
 	REGISTER_FECORE_CLASS(FEWarpSingleFilteredImageConstraint, "warp-filtered-image");
+	REGISTER_FECORE_CLASS(FEWarpFilteredImageConstraintNorm, "warp-filtered-image-norm");
 	REGISTER_FECORE_CLASS(FEWarpMultiImageConstraint, "warp-multi-image");
 	REGISTER_FECORE_CLASS(FEWarpSurfaceConstraint, "warp-mesh" );
 
@@ -37,8 +41,12 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 	REGISTER_FECORE_CLASS(FEPlotTarget  , "warp-target"  );
 	REGISTER_FECORE_CLASS(FEPlotEnergy  , "warp-energy"  );
 	REGISTER_FECORE_CLASS(FEPlotForce   , "warp-force"   );
+	REGISTER_FECORE_CLASS(FEPlotNCCForce, "warp-ncc-force");
 	REGISTER_FECORE_CLASS(FEPlotDiff    , "warp-diff"    );
 	REGISTER_FECORE_CLASS(FEPlotRawDiff, "warp-raw-diff");
+	REGISTER_FECORE_CLASS(FEPlotNCC, "warp-ncc");
+	REGISTER_FECORE_CLASS(FEPlotRawNCC, "warp-raw-ncc");
+	REGISTER_FECORE_CLASS(FEPlotNCCEnergy, "warp-ncc-energy");
 	REGISTER_FECORE_CLASS(FEPlotGradT, "warp-gradT");
 	REGISTER_FECORE_CLASS(FEPlotGradS, "warp-gradS");
 
